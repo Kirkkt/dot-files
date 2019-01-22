@@ -1,0 +1,1141 @@
+" neobundle {{{1
+set runtimepath+=~/.vim/bundle/neobundle.vim/
+call neobundle#begin(expand('~/.vim/bundle/'))
+NeoBundleFetch 'Shougo/neobundle.vim'
+
+" active plug-ins
+NeoBundle 'chrisbra/csv.vim'
+NeoBundle 'ctrlpvim/ctrlp.vim' " <c-p> :CtrlP :CtrlPBuffer :CtrlPMRUFiles :CtrlPBookmarkDir
+NeoBundle 'nixon/vim-vmath'
+NeoBundle 'shinokada/dragvisuals.vim'
+NeoBundle 'tpope/vim-commentary' " gc
+NeoBundle 'wgurecky/vimSum'
+NeoBundle 'xolox/vim-misc'
+NeoBundle 'xolox/vim-session'
+NeoBundle 'yegappan/mru'
+NeoBundle 'tpope/vim-eunuch' " :Rename new_name to use, **TRY**
+NeoBundle 'maxbrunsfeld/vim-yankstack'
+
+" passive plug-ins
+NeoBundle 'EinfachToll/DidYouMean'
+NeoBundle 'ervandew/supertab'
+NeoBundle 'mhinz/vim-signify'
+NeoBundle 'oblitum/rainbow'
+NeoBundle 'osyo-manga/vim-over' " realtime highlighting for replacements, **TRY**
+NeoBundle 'LucHermitte/lh-vim-lib', {'name': 'lh-vim-lib'}
+NeoBundle 'LucHermitte/local_vimrc', {'depends': 'lh-vim-lib'}
+
+" colorschemes
+NeoBundle 'morhetz/gruvbox'
+NeoBundle 'DAddYE/soda.vim'
+
+" coding specific
+NeoBundle 'nathanaelkane/vim-indent-guides'
+
+" boilerplate
+call neobundle#end()
+
+" after plugins are loaded
+NeoBundleCheck
+
+" Base {{{1
+" Essential {{{2
+
+" Load ftplugin/ settings
+filetype plugin on
+
+" Syntax highlight based on file type
+syntax enable
+
+" Only redraw when necessary
+set lazyredraw
+
+" Don't use the annoying backup file since I have git
+set nobackup
+
+" Stop generating the annoying .swap files
+set noswapfile
+
+" Disable modeline for safety (I can use autocmd + vimrc_flagName instead if I really want it)
+set nomodeline
+
+" Make spell check more aggressive.
+set spelllang=en_us,de_de
+
+" Make <c-a> and <c-x> work properly on 07, 08, 09, etc
+set nrformats=
+
+" stop syntax highlighting for super long lines (causes vim to be slow)
+set synmaxcol=300
+
+" better wrapping of long lines visually
+set breakindent
+set showbreak=↪
+
+" Resizes splits when window is resized
+au VimResized * :wincmd =
+
+" Configure how :Explore should look like, 3 for tree structure
+let g:netrw_liststyle=3
+
+" Cursor position on the bottom right corner
+set ruler
+
+set hlsearch
+
+" Show current file name on status bar
+set laststatus=2
+
+" Set relative line numbering
+set relativenumber
+" Set absolute line numbering for the current line
+set number
+
+" New horizontal splits spawns below
+set splitbelow
+" New vertical splits spawns to the right
+set splitright
+
+" Preview 5 lines when scrolling
+set scrolloff=5
+
+" Wrap long text to the next display line
+set wrap
+
+" Wrap long text by breaking between words
+set linebreak
+
+" Highlight current line
+set cursorline
+
+" show invisibles
+set list
+set listchars=tab:▸\ ,extends:❯,precedes:❮,nbsp:.,trail:·
+
+" More history
+set history=100
+
+" No history for netrw
+let g:netrw_dirhistmax=0
+
+" automatically reload changed file
+set autoread
+
+" Don't fold on startup
+set nofoldenable
+
+" Fold on marker always!
+set foldmethod=marker
+
+" Maximum levels to fold is 10 (never should exceed)
+set foldnestmax=10
+
+" create persist undo
+set history=1000
+set undofile
+set undodir=~/.vim/undo
+set undolevels=1000
+set undoreload=10000
+set backupdir=~/.vim/backup/
+set directory=~/.vim/backup/
+
+" Use stronger encryption
+set cryptmethod=blowfish
+
+" Register and mark to abuse: @p
+" Interesting line break characters:
+" ⏎
+" ᐊ
+" ☯
+" ˔
+" ★
+" ⤦
+
+" Eye-candy {{{2
+" Change cursor shape between insert and normal mode in iTerm and tmux
+if exists('$TMUX')
+  let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+  let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+elseif $TERM_PROGRAM =~ "iTerm"
+  let &t_SI = "\<Esc>]50;CursorShape=1\x7" " Vertical bar in insert mode
+  let &t_EI = "\<Esc>]50;CursorShape=0\x7" " Block in normal mode
+endif
+
+" Edit {{{2
+" Automatically indent
+set autoindent
+" Smartly indent, helpful for coding because it takes care of brackets
+set smartindent
+
+" 2-space tabing
+set tabstop=2
+" treat 2 spaces as one deletion when deleting
+set softtabstop=2
+" Set shiftwidth the same value as tabstop
+set shiftwidth=0
+
+" Use spaces for tabs
+set expandtab
+
+" Search {{{2
+" Case insensitive
+set ignorecase
+" Toggle on case sensitive when the search pattern contains an upper-case letter
+set smartcase
+
+" Incremental search to preview matches
+set incsearch
+
+" Default replace to be global, as opposed to only the current line
+set gdefault
+
+" Causes search to wrap back to the top of the file when reached bottom
+set wrapscan
+
+" Ex command line {{{2
+" In ex mode, hit <tab> will show all available options
+set wildmenu
+" wildignore
+" auto-generated file directories
+set wildignore+=*/node_modules/*,*/webpack_cache/*,*/tmp/*,*/bower_components/*,*/dist/*,*/vendor/*
+" Version control
+set wildignore+=.hg,.git,.svn
+" LaTeX intermediate files
+set wildignore+=*.aux,*.out,*.toc
+" binary files
+set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg,*.zip
+" compiled object files
+set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest
+" compiled spelling word lists
+set wildignore+=*.spl
+" Vim swap and link files
+set wildignore+=*.sw?,*so
+" OSX junk
+set wildignore+=*.DS_Store
+" Lua byte code
+set wildignore+=*.luac
+" Python byte code
+set wildignore+=*.pyc
+" Merge resolution files
+set wildignore+=*.orig
+" Java class files
+set wildignore+=*.class
+
+" Universal auto commands {{{2
+" Return to last edit position
+autocmd BufReadPost *
+    \ if line("'\"") > 0 && line("'\"") <= line("$") |
+    \   exe "normal! g`\"" |
+    \ endif
+
+" Only show cursorline for the current window
+autocmd WinEnter,BufEnter * setlocal cursorline
+autocmd WinLeave * setlocal nocursorline
+
+" Turn off paste mode on existing insert mode
+autocmd InsertLeave * set nopaste
+
+" Handle non-UTF-8 characters on save
+autocmd BufWritePre * UncommonCharactersReplace
+
+" Set proper auto write and hidden for no name buffers and named buffers
+function SetAutoWriteAndHiddenFunction()
+  if bufname('%') != ''
+    " named buffer associated with a file
+    " save on switching buffers
+    setlocal autowrite
+    setlocal autowriteall
+    setlocal nohidden
+  else
+    " no name buffer
+    " there is nothing to save
+    setlocal noautowrite
+    setlocal noautowriteall
+    " this allows me to switch buffers easily
+    setlocal hidden
+  endif
+endfunction
+autocmd WinEnter,BufEnter * silent! call SetAutoWriteAndHiddenFunction()
+
+" GUI {{{2
+if system("uname") == "Darwin\n"
+  set guifont=Menlo\ Regular:h20
+elseif system("uname") == "Linux\n"
+  set guifont=DejaVu\ Sans\ Mono\ 14
+endif
+" m - menu bar
+" T - toolbar
+" L - left scroll bar
+" r - right scroll bar
+set guioptions-=mTLr
+
+" Better defaults {{{1
+
+" Automatically jump to the end of the block after pasting
+nnoremap <silent> p p`]
+nnoremap <silent> P P`]
+
+" Yank till EOL
+nnoremap Y y$
+
+" Split the current line
+nnoremap S i<cr><esc>l
+
+" Map J and K to normal j and k. It helps avoid mistakes during visual line mode
+xnoremap J j
+xnoremap K k
+
+" Sane visual mode {{{2
+" Jump to the end of the block after yanking
+xnoremap <silent> y y`]
+
+" Maintain the default register aftering pasting over, also jump to the end of
+" the pasted block
+xnoremap <silent> p "_dP`]
+xnoremap <silent> P "_dP`]
+
+" Enable dot command to repeat in visual mode
+xnoremap . :normal!.<cr>
+
+" Keep text selected after manual indentation
+xnoremap < <gv
+xnoremap > >gv
+
+" Plugin settings {{{1
+" MRU
+nnoremap <space>r :MRU<CR>
+
+" CtrlP
+let g:ctrlp_map = '<c-p>'
+nnoremap <space><space>r :CtrlPMRUFiles<CR>
+nnoremap <f6> :CtrlPBuffer<CR>
+nnoremap <f7> :CtrlPBookmarkDir<CR>
+
+" ctrlp ignore
+let g:ctrlp_custom_ignore = '\v[\/](compiler|node_modules|target|dist)|(\.(swp|ico|git|svn))$'
+
+" rainbow
+" enabled rainbow
+let g:rainbow_active = 1
+
+" vim-session
+" disable auto prompting to save sessions
+let g:session_autosave = 'no'
+
+" vmath
+vnoremap <expr> ++ VMATH_YankAndAnalyse()
+
+" VimSum
+vnoremap -- :VisSum<cr>
+
+" listTrans
+nnoremap <space>tl :call ListTrans_toggle_format()<CR>
+vnoremap <space>tl :call ListTrans_toggle_format('visual')<CR>
+
+" dragvisuals
+vmap <expr> <LEFT> DVB_Drag('left')
+vmap <expr> <RIGHT> DVB_Drag('right')
+vmap <expr> <DOWN> DVB_Drag('down')
+vmap <expr> <UP> DVB_Drag('up')
+vmap <expr> D DVB_Duplicate()
+
+" Remove any introduced trailing whitespace after moving
+let g:DVB_TrimWS = 1
+
+" csv.vim
+" getting vanilla W to work
+let g:csv_nomap_w = 1
+
+" vim-indent-guides
+" by default vim-indent-guides occupies \ig, mapping it to something useless releases \ig
+nnoremap <space>t<f1>` :<Plug>IndentGuidesToggle<cr>
+
+" yankstack
+nmap <c-k> <Plug>yankstack_substitute_older_paste
+nmap <c-j> <Plug>yankstack_substitute_newer_paste
+
+" Abbreviations {{{1
+" Quick insert dates
+inoreabbrev qdl <c-r>=strftime("%Y/%m/%d")<cr><left><esc>
+inoreabbrev qds <c-r>=strftime("%Y%m%d")<cr><left><esc>
+
+" colorscheme {{{1
+" Set default colorscheme
+function SetDefaultColorschemeFunction()
+  if system("uname") == "Darwin\n"
+    set background=dark
+    colorscheme gruvbox
+  elseif system("uname") == "Linux\n"
+    " Explicitly use 256 color, mac iTerm sets it for me
+    set t_Co=256
+    set background=dark
+    colorscheme gruvbox
+  endif
+endfunction
+
+" Change colorscheme
+let s:colorscheme_id = 0
+function ChangeColorschemeFunction()
+  if (s:colorscheme_id == 0)
+    let s:colorscheme_id = 1
+    set background=light
+    colorscheme soda
+  elseif (s:colorscheme_id == 1)
+    let s:colorscheme_id = 0
+    silent! call SetDefaultColorschemeFunction()
+  endif
+  silent! call InterestingWordHighlightInitFunction()
+endfunction
+
+command ChangeColorscheme silent! call ChangeColorschemeFunction()
+silent! call SetDefaultColorschemeFunction()
+
+" Search for git conflicts {{{1
+command GitConflictsSearch /^[=<>]\{7\}
+
+" Interesting word highlight {{{1
+" Everytime colorscheme is changed, this init function needs to be called
+" color definition
+function! InterestingWordHighlightInitFunction()
+  hi def InterestingWord1 guifg=#000000 ctermfg=16 guibg=#ffa724 ctermbg=109
+  hi def InterestingWord2 guifg=#000000 ctermfg=16 guibg=#aeee00 ctermbg=154
+  hi def InterestingWord3 guifg=#000000 ctermfg=16 guibg=#8cffba ctermbg=121
+  hi def InterestingWord4 guifg=#000000 ctermfg=16 guibg=#b88853 ctermbg=137
+  hi def InterestingWord5 guifg=#000000 ctermfg=16 guibg=#ff9eb8 ctermbg=211
+  hi def InterestingWord6 guifg=#000000 ctermfg=16 guibg=#ff2c4b ctermbg=197
+  hi def InterestingWord7 guifg=#000000 ctermfg=16 guibg=#61a82c ctermbg=244
+endfunction
+
+" Highlight words
+function! InterestingWordHighlightFunction(n)
+  call InterestingWordHighlightInitFunction()
+  " Save our location.
+  normal! mz
+  " Yank the current word into the z register.
+  normal! "zyiw
+  " Calculate an arbitrary match ID.  Hopefully nothing else is using it.
+  let l:mid = 86750 + a:n
+  " Clear existing matches, but don't worry if they don't exist.
+  call matchdelete(l:mid)
+  " Construct a literal pattern that has to match at boundaries.
+  let l:pat = '\V\<' . escape(@z, '\') . '\>'
+  " Actually match the words.
+  call matchadd("InterestingWord" . a:n, l:pat, 1, l:mid)
+  " Move back to our original location.
+  normal! `z
+endfunction
+
+" mapping
+nnoremap <space>thh :silent! call clearmatches()<cr>:noh<cr>
+nnoremap <space>th1 :silent! call InterestingWordHighlightFunction(1)<cr>
+nnoremap <space>th2 :silent! call InterestingWordHighlightFunction(2)<cr>
+nnoremap <space>th3 :silent! call InterestingWordHighlightFunction(3)<cr>
+nnoremap <space>th4 :silent! call InterestingWordHighlightFunction(4)<cr>
+nnoremap <space>th5 :silent! call InterestingWordHighlightFunction(5)<cr>
+nnoremap <space>th6 :silent! call InterestingWordHighlightFunction(6)<cr>
+
+" Search for lines longer than 100 characters {{{1
+command LongLinesSearch /^.*\%>100v.\+
+
+" Manual maps {{{1
+function! MapCrFunction()
+  let l:file = expand('%:p')
+  if l:file =~ '/dev/preorder-frontend'
+    nnoremap <cr> ggdG:silent! r ~/git/dot-files/vim/2plugins/manualMapping/react-please-remove-component.js<bar>w<cr>
+  elseif l:file =~ '/dev/preorder-frontend2'
+    nnoremap <cr> ggdG:silent! r ~/git/dot-files/vim/2plugins/manualMapping/react-please-remove-component.js<bar>w<cr>
+  endif
+endfunction
+
+command! MapCr silent! call MapCrFunction()
+
+
+" mappings {{{1
+" vimrc_noReplaceUncommonCharacters
+" Normal mode {{{2
+" Current file operation
+nnoremap <space>f :w !diff - %<cr>
+
+nnoremap <space><space>q :qa!<cr>
+nnoremap <space><space>x :xa!<cr>
+nnoremap <space><space>w :w!<cr>
+nnoremap <f8> :w<bar>bd<cr>
+
+" Buffer operations
+nnoremap <space>j :bnext<cr>
+nnoremap <space>k :bprevious<cr>
+
+nnoremap <space><space>b :bdelete!<cr>
+
+" Easier macro and ex command mode
+nnoremap Q @q
+nnoremap K @k
+nnoremap <down> @@
+nnoremap <up> @:
+
+" <space>6 for switching between 2 buffers
+nnoremap <space>6 <c-^>
+"
+" Map <f1> to <esc> in all modes to avoid misclick
+nmap <f1> <esc>
+
+" Toggler
+nnoremap <space>ts :set spell!<cr>
+nnoremap <space>tw :set wrap!<cr>
+nnoremap <space>tc :ChangeColorscheme<cr>
+nnoremap <space>tn :set number! relativenumber! <bar> SignifyToggle<cr>
+nnoremap <space>tp :set paste<cr>
+nnoremap <space>ti :IndentGuidesToggle<cr>
+
+" vimgrep
+" easier navigation after vimgrep
+nnoremap <left> :cp<cr>
+nnoremap <right> :cn<cr>
+
+" arithmetics
+" calculate and replace
+nnoremap <space>ar 0"pc$=p<cr><esc>
+" calculate and append the result
+nnoremap <space>aa mp0"py$A = =p<cr><esc>`p
+
+" vim-signify
+" The default mappings are pretty good, so I list them here
+" [c : jump to the next change
+" ]c : jump to the previous change
+" [C : jump to the first change
+" ]C : jump to the last change
+
+" Misc
+" in normal mode, vim has a built-in shortcut !! to easily run the current
+" line in sh/bash/fish/whatever
+nnoremap <space>n <c-w><c-w>
+" run the current line in ex command line
+nnoremap <space>t1 :exe getline(".")<cr>
+" quickly invoke quick abbreviations
+nnoremap <space>tq :r! fish -c 'q '<left>
+
+" Ex command mode {{{2
+" Quick horizontal movements
+cnoremap <c-h> <left>
+cnoremap <c-l> <right>
+cnoremap <c-a> <home>
+cnoremap <c-e> <end>
+cnoremap <c-x> <BS>
+cnoremap <c-d> <delete>
+
+" Abbreviations
+cnoremap zkl lcd %:p:h<cr>
+cnoremap zks w<bar>so %<cr>
+cnoremap zkt x! /tmp/tmp<cr>
+
+" vimgrep
+cnoremap zkg silent vimgrep  **<left><left><left>
+
+" Miscellaneous
+" paste the current line onto the ex command line
+nnoremap <space>te ^y$:"
+
+" Insert mode {{{2
+" Quick esc
+inoremap jl <esc>
+" Auto-completion
+" line complete
+inoremap zf 
+
+" auto set spell for dictionary complete and suggestion
+inoremap <c-x><c-k> <esc>:set spell<cr>a<c-x><c-k><c-p>
+inoremap <c-x>s <esc>:set spell<cr>a<c-x>s
+
+" Quick put
+inoremap zp "
+inoremap z<space>p +
+
+" German
+inoremap z<space>u ü
+inoremap z<space>U Ü
+inoremap z<space>a ä
+inoremap z<space>A Ä
+inoremap z<space>o ö
+inoremap z<space>O Ö
+inoremap z<space>s ß
+inoremap z<space>S ẞ
+
+" Visual mode {{{2
+" Reselect the recently copied
+nnoremap gV `[v`]
+" Reformat the recently copied
+nnoremap g= `[v`]=
+" blackhold delete
+xnoremap <bs> "_d
+" visually select the currently line but without the prepending whitespaces or the line break
+nnoremap <space>tv $v^
+xnoremap <space>t1 :<c-w>exe join(getline("'<", "'>"), '<bar>')<cr>
+
+" System {{{2
+" System clipboard
+nnoremap <space>p "+p`]
+nnoremap <space>P "+P`]
+nnoremap <space>y "+y`]
+nnoremap <space>Y "+Y`]
+nnoremap <space>d "+d
+nnoremap <space><space>d "+dd
+nnoremap <space>D "+D
+
+xnoremap <space>p "+p`]
+xnoremap <space>P "+P`]
+xnoremap <space>y "+y`]
+xnoremap <space>Y "+Y`]
+xnoremap <space>d "+d
+xnoremap <space>D "+D
+xnoremap <space>x "+x
+xnoremap <space>X "+X
+
+" my vimgrep {{{1
+function! MyVimgrepFunction(keyword)
+  silent! call InterestingWordHighlightFunction(7)
+  let l:file = expand('%:p')
+  if l:file =~ '/git/dot-files/vim'
+    let l:dirPattern='~/git/dot-files/vim/**/*'
+  elseif l:file =~ '/git/dot-files/fish'
+    let l:dirPattern='~/git/dot-files/fish/**/*'
+  elseif l:file =~ '/dev/preorder-frontend'
+    let l:dirPattern='~/dev/preorder-frontend/src/**/*.js'
+  elseif l:file =~ '/dev/preorder-frontend2'
+    let l:dirPattern='~/dev/preorder-frontend2/src/**/*.js'
+  elseif l:file =~ '/dev/qpay_web'
+    let l:dirPattern='~/dev/qpay_web/src/**/*.js'
+  else
+    let l:dirPattern='**/*'
+  endif
+  if g:myVimgrepCase
+    let l:casePattern='\C'
+  else
+    let l:casePattern=''
+  endif
+  if g:myVimgrepWord
+    let l:wordOpen='\<'
+    let l:wordClose='\>'
+  else
+    let l:wordOpen=''
+    let l:wordClose=''
+  endif
+  exe('vimgrep /'.l:wordOpen.a:keyword.l:wordClose.l:casePattern.'/ '.l:dirPattern)
+  if g:myVimgrepCOpen
+    copen
+  endif
+endfunction
+
+" default settings
+let myVimgrepCase=1
+let myVimgrepWord=1
+let myVimgrepCOpen=0
+
+" mappings
+nnoremap <space>t8 "zyiw:silent! call MyVimgrepFunction(@z)<cr>
+
+" open all files in grep result {{{1
+" this is basically only useful when using cs {search_pattern} vim-inspect, it
+" opens all files in the current buffer and closes the grep result buffer
+function! OpenAllFilesInGrepResultFunction()
+  g/:\d*:/norm nD
+  sort u
+  %s/\(.*\)/e \1
+  %d b
+  bd!
+  @b
+  silent! unmap <cr>
+  next
+endfunction
+
+command OpenAllFilesInGrepResult silent! call OpenAllFilesInGrepResultFunction()
+
+" pandoc {{{1
+" Use pandoc to convert current file to html and open {{{2
+if system("uname") == "Darwin\n"
+  function PandocToHtmlFunction()
+    " generate the html file using pandoc
+    !pandoc -o /tmp/temp.html "%"
+    " open the above-generated html file
+    !open /tmp/temp.html
+    " the above somehow messes up the display, redraw
+    redraw!
+  endfunction
+else
+  function PandocToHtmlFunction()
+    " generate the html file using pandoc
+    !pandoc -o /tmp/temp.html "%"
+    " open the above-generated html file using chormium
+    !chromium-browser /tmp/temp.html
+    " the above somehow messes up the display, redraw
+    redraw!
+  endfunction
+endif
+
+command PandocToHtml silent! call PandocToHtmlFunction()
+
+" Use pandoc to convert current file to pdf in simple mode (no contents list) and open {{{2
+if system("uname") == "Darwin\n"
+  function PandocToPdfSimpleFunction()
+    " generate the pdf file using pandoc
+    !pandoc -o /tmp/temp.pdf "%"
+    " open the output html
+    !open /tmp/temp.pdf
+    " the above somehow messes up the display, redraw
+    redraw!
+  endfunction
+else
+  function PandocToPdfSimpleFunction()
+    " generate the pdf file using pandoc
+    !pandoc -o /tmp/temp.pdf "%"
+    " open the output pdf using evince
+    !evince /tmp/temp.pdf
+    " the above somehow messes up the display, redraw
+    redraw!
+  endfunction
+endif
+
+command PandocToPdfSimple silent! call PandocToPdfSimpleFunction()
+
+" Use pandoc to convert current file to pdf and open {{{2
+if system("uname") == "Darwin\n"
+  function PandocToPdfFunction()
+    " generate the pdf file using pandoc
+    !pandoc --toc --toc-depth=2 -o /tmp/temp.pdf "%"
+    " open the output html
+    !open /tmp/temp.pdf
+    " the above somehow messes up the display, redraw
+    redraw!
+  endfunction
+else
+  function PandocToPdfFunction()
+    " generate the pdf file using pandoc
+    !pandoc --toc --toc-depth=2 -o /tmp/temp.pdf "%"
+    " open the output pdf using evince
+    !evince /tmp/temp.pdf
+    " the above somehow messes up the display, redraw
+    redraw!
+  endfunction
+endif
+
+command PandocToPdf silent! call PandocToPdfFunction()
+
+" Use pandoc to auto-format {{{2
+" Pros:
+" - Idiot-proof formatting
+" - Auto fixing special characters by prepending slash \
+" Cons:
+" - Sometimes it indent a big paragraph wrongly
+" - Annoying # replacing === and ## replacing ---
+let s:markdown_format_id = 0
+function TogglePandocMarkdownReformatFunction()
+  if (s:markdown_format_id == 0)
+    let &formatprg="pandoc --from=markdown --to=html | pandoc --from=html --to=markdown"
+    let s:markdown_format_id = 1
+    echo 'markdown reformat using pandoc'
+  elseif (s:markdown_format_id == 1)
+    let &formatprg=""
+    let s:markdown_format_id = 0
+    echo 'default reformat'
+  endif
+endfunction
+
+command TogglePandocMarkdownReformat silent! call TogglePandocMarkdownReformatFunction()
+
+" My own surround {{{1
+nnoremap <space>s8 "pciW*<c-r>p*<esc>
+nnoremap <space>s9 "pciW(<c-r>p)<esc>
+nnoremap <space>s0 "pciW(<c-r>p)<esc>
+nnoremap <space>s` "pciW`<c-r>p`<esc>
+nnoremap <space>s[ "pciW[<c-r>p]<esc>
+nnoremap <space>s] "pciW[<c-r>p]<esc>
+nnoremap <space>ss[ "pciW{<c-r>p}<esc>
+nnoremap <space>ss] "pciW{<c-r>p}<esc>
+nnoremap <space>s' "pciW'<c-r>p'<esc>
+nnoremap <space>ss' "pciW"<c-r>p"<esc>
+nnoremap <space>s, "pciW<<c-r>p><esc>
+nnoremap <space>s. "pciW<<c-r>p><esc>
+
+" to html and open {{{1
+function ToHtmlAndOpenFunction()
+  " convert to html
+  TOhtml
+  " open it in browser
+  !open %
+  " wait a bit
+  !sleep 2
+  " remove the converted html file
+  !rm %
+  " quick the quickfix window
+  q
+  " redraw
+  redraw!
+endfunction
+
+command ToHtmlAndOpen silent! call ToHtmlAndOpenFunction()
+
+" replace uncommon characters {{{1
+" vimrc_noReplaceUncommonCharacters
+" Replace common non-UTF-8 characters
+function UncommonCharactersReplaceFunction()
+  normal mp
+  " We need to protect this script itself and similar places where non-UTF characters listed below
+  " should stay intact.
+  " To achieve this, add the text vimrc_noReplaceUncommonCharacters anywhere in the doc
+  let s:noReplaceUncommonCharacters=0
+  g/vimrc_noReplaceUncommonCharacters/let s:noReplaceUncommonCharacters=1
+  if (s:noReplaceUncommonCharacters)
+  else
+    %s/Å/A
+    " %s/–/-
+    " %s/—/-
+    " %s/―/-
+    " %s/‘/'
+    " %s/’/'
+    " %s/“/"
+    " %s/”/"
+    " %s/′/'
+  endif
+  normal `pzz
+endfunction
+
+command UncommonCharactersReplace silent! call UncommonCharactersReplaceFunction()
+
+" Find non-UTF-8 characters
+command UncommonCharactersSearch /[^\x00-\x7F]
+
+" enable * and # search in visual mode {{{1
+" Search the visual selection in visual mode
+function VSetSearchBoundedFunction()
+  let s:temp =@@
+  normal! gvy
+  let @/ = '\V\<' . substitute(escape(@@, '\'), '\n', '\\n', 'g') . '\>'
+  let @@ = s:temp
+endfunction
+
+function VSetSearchBoundlessFunction()
+  let s:temp =@@
+  normal! gvy
+  let @/ = '\V' . substitute(escape(@@, '\'), '\n', '\\n', 'g')
+  let @@ = s:temp
+endfunction
+
+xnoremap * :<c-u>call VSetSearchBoundedFunction()<cr>//<cr><c-o>
+xnoremap # :<c-u>call VSetSearchBoundedFunction()<cr>??<cr><c-o>
+xnoremap g* :<c-u>call VSetSearchBoundlessFunction()<cr>//<cr><c-o>
+xnoremap g# :<c-u>call VSetSearchBoundlessFunction()<cr>??<cr><c-o>
+
+" Clean up trailing whitespaces {{{1
+function WhitespaceClearFunction()
+  " set up a marker
+  normal mp
+  " clear whitespace
+  %s/\s\+$//e
+  " return to the previous marker
+  normal `p
+endfunction
+
+command WhitespaceClear silent! call WhitespaceClearFunction()
+
+" Clean up continuous empty lines {{{1
+function ContinuousEmptyLinesClearFunction()
+  " set up a marker
+  normal mp
+  " clear continuous empty lines
+  %!cat -s
+  " return to the previous marker
+  normal `pzz
+endfunction
+" Clean up continuous empty lines
+command ContinuousEmptyLinesClear silent! call ContinuousEmptyLinesClearFunction()
+
+" Clean up two continuous spaces in the middle of a line {{{1
+function TwoContinuousSpacesClearFunction()
+  " set up a marker
+  normal mp
+  " deal with dual continuous spaces on their own line
+  %s/\v^  $/vimrc_imtwospacesonourownline
+  " deal with dual continuous spaces on the start of their line
+  %s/\v^  \ze\S/vimrc_imtwospacesonourownline
+  " deal with dual continuous spaces on the end of their line
+  %s/\v\S\zs  $/vimrc_imtwospacesonourownline
+  " use two replace commands so that this file itself won't be contaminated
+  %s/vimrc_imtwospacesonourownline/vimrc_imtwospacesonourownlineleaveusalone
+  " deal with other dual continuous spaces, which is what we want
+  %s/\v\S\zs  \ze\S/ /
+  " put back the innocent ones
+  %s/vimrc_imtwospacesonourownlineleaveusalone/  /
+  " return to the previous marker
+  normal `p
+endfunction
+
+command TwoContinuousSpacesClear silent! call TwoContinuousSpacesClearFunction()
+
+" trailing whitespace highlight {{{1
+" define new highlight
+highlight TrailingWhitespace ctermbg=yellow
+
+" apply newly defined highlight
+match TrailingWhitespace /\s\+$/
+
+" ftplugins {{{1
+" crontab {{{2
+autocmd filetype crontab setlocal nobackup nowritebackup
+
+" csv {{{2
+" Disable auto-wrapping
+" can also set ft to spreadsheet, but I won't be able to use CSVArrangeColumn
+autocmd BufNewFile,BufRead *.csv setlocal ft=csv
+
+" rearrange columns
+let g:rearrange_all_columns_id = 0
+function ToggleRearrangeAllColumnsFunction()
+  if (g:rearrange_all_columns_id == 0)
+    %CSVArrangeColumn
+    let g:rearrange_all_columns_id = 1
+  elseif (g:rearrange_all_columns_id == 1)
+    %CSVUnArrangeColumn
+    let g:rearrange_all_columns_id = 0
+  endif
+endfunction
+
+nnoremap <space>ta :silent! call ToggleRearrangeAllColumnsFunction()<cr>
+
+" disable auto line wrapping
+autocmd FileType spreadsheet setlocal formatoptions-=c
+
+" file-specific colorcolumn settings
+autocmd BufEnter lab-tests.csv set colorcolumn=200
+autocmd BufLeave lab-tests.csv set colorcolumn=
+autocmd BufEnter vaccine.csv set colorcolumn=135
+autocmd BufLeave vaccine.csv set colorcolumn=
+autocmd BufEnter vision.csv set colorcolumn=128
+autocmd BufLeave vision.csv set colorcolumn=
+autocmd BufEnter weight.csv set colorcolumn=65
+autocmd BufLeave weight.csv set colorcolumn=
+autocmd BufEnter credit-score.csv set colorcolumn=41
+autocmd BufLeave credit-score.csv set colorcolumn=
+autocmd BufEnter net-worth.csv set colorcolumn=102
+autocmd BufLeave net-worth.csv set colorcolumn=
+autocmd BufEnter dental.csv set colorcolumn=104
+autocmd BufLeave dental.csv set colorcolumn=
+autocmd BufEnter cardiology.csv set colorcolumn=91
+autocmd BufLeave cardiology.csv set colorcolumn=
+autocmd BufEnter spending.csv set colorcolumn=119
+autocmd BufLeave spending.csv set colorcolumn=
+autocmd BufEnter online-resources.csv set colorcolumn=83
+autocmd BufLeave online-resources.csv set colorcolumn=
+
+
+" fish {{{2
+" Disable auto commenting
+autocmd FileType conf setlocal formatoptions-=c formatoptions-=o formatoptions-=r
+
+" colorcolumn 100
+autocmd FileType conf setlocal colorcolumn=100
+
+" Set file type for fish shell scripts to be conf
+autocmd BufNewFile,BufRead *.fish,*fishrc* setlocal filetype=conf
+
+" Clear whitespace on save
+autocmd BufWritePre *.fish,*fishrc* WhitespaceClear
+
+" fish function abbreviation
+autocmd BufNewFile,BufRead,BufEnter *.fish,*fishrc* inoreabbrev func type FUNCTION_NAME > /dev/null 2>&1;
+  \or function FUNCTION_NAME
+  \<cr>end<esc>k$*
+
+" unmap end when leaving
+autocmd BufLeave *.fish,*fishrc* silent! unabbreviate func
+
+" html {{{2
+
+" Ideal column width is 100
+autocmd FileType html setlocal textwidth=100
+autocmd FileType html syntax on
+
+" Auto clear whitespace
+autocmd BufWritePre *.html WhitespaceClear
+
+
+" java {{{2
+
+" Ideal column width is 100
+autocmd FileType java setlocal textwidth=100
+
+" use 4 spaces for tabs
+" 4 spaces for 1 tab
+autocmd FileType java setlocal tabstop=4
+" one deletion removes 4 spaces
+autocmd FileType java setlocal softtabstop=4
+" set shiftwidth to follow tabstop
+autocmd FileType java setlocal shiftwidth=0
+
+" Auto clear whitespace
+autocmd BufWritePre *.java WhitespaceClear
+
+" javascript {{{2
+" set filetype for files that should be treated as javascript
+autocmd BufNewFile,BufRead *.jsx setlocal ft=javascript
+autocmd BufNewFile,BufRead *.ts setlocal ft=javascript
+autocmd BufNewFile,BufRead *.tsx setlocal ft=javascript
+
+" Ideal column width is 100
+autocmd FileType javascript setlocal textwidth=100
+autocmd FileType javascript setlocal colorcolumn=100
+" Set it to 120 temporarily
+autocmd FileType javascript setlocal textwidth=120
+autocmd FileType javascript setlocal colorcolumn=120
+
+" quick save and run with node
+autocmd FileType javascript nnoremap <f9> :w<cr>:!clear;node %<cr>
+
+" Auto clear whitespace
+autocmd BufWritePre *.js WhitespaceClear
+autocmd BufWritePre *.jsx WhitespaceClear
+autocmd BufWritePre *.ts WhitespaceClear
+autocmd BufWritePre *.tsx WhitespaceClear
+
+" Abbreviations
+autocmd FileType javascript inoreabbre qcons constructor(props) {
+  \<cr>super(props);
+  \<cr>
+  \<cr>this.state = {};
+  \<cr>}<esc>
+autocmd FileType javascript inoreabbre qbind this.FUNCTION_NAME = this.FUNCTION_NAME.bind(this);<esc>7b*
+autocmd FileType javascript inoreabbre qtry try {
+  \<cr>} catch (error) {
+  \<cr>console.log('Error:', error.message);
+  \<cr>}<esc>3ko
+
+" insert demo js functions faster inside lncd
+autocmd FileType javascript inoreabbrev learnjsfunc const FUNCTION_NAME = function() {
+  \<cr>console.log('# FUNCTION_NAME');
+  \<cr>};
+  \<cr>FUNCTION_NAME();<esc>FN*
+
+" make {{{2
+
+" use hard tabs
+autocmd FileType make setlocal tabstop=4
+autocmd FileType make setlocal softtabstop=4
+autocmd FileType make setlocal noexpandtab
+
+" Auto clear whitespace
+autocmd BufWritePre Makefile WhitespaceClear
+
+" markdown {{{2
+
+" Ideal column width is 100
+autocmd FileType markdown setlocal textwidth=100
+autocmd FileType markdown setlocal spell
+autocmd FileType markdown setlocal colorcolumn=100
+
+" Make level 1 and level 2 headers
+autocmd FileType markdown nnoremap <space>h1 yypVr=kA <!-- {{a<bs>{1 --><esc>O\pagebreak<cr><esc>j
+autocmd FileType markdown nnoremap <space>h2 yypVr-kA <!-- {{a<bs>{2 --><esc>
+autocmd FileType markdown nnoremap <space>h3 I### <esc>
+autocmd FileType markdown nnoremap <space>h4 I#### <esc>
+autocmd FileType markdown nnoremap <space>h5 I##### <esc>
+autocmd FileType markdown nnoremap <space>h6 I###### <esc>
+
+" shortcuts to use build in pandoc
+autocmd FileType markdown nnoremap K :PandocToHtml<cr>
+autocmd FileType markdown nnoremap <space>K :PandocToPdf<cr>
+autocmd FileType markdown nnoremap <space><space>K :PandocToPdfSimple<cr>
+
+" auto enter new file header
+autocmd BufNewFile *.mkd normal I<!--  -->F!lll"%p
+autocmd BufNewFile *.mkd silent! s/ .*\// /
+autocmd BufNewFile *.mkd s/\.mkd//
+
+
+" better checkbox
+autocmd FileType markdown nnoremap <cr> :call TickCheckboxMarkdown()<cr>
+function! TickCheckboxMarkdown()
+  if getline('.')[0] == '-' && getline('.')[1] == ' ' && getline('.')[2] == '[' && getline('.')[4] == ']'
+    if getline('.')[3] == ' '
+      normal mp4|rx`p
+    elseif getline('.')[3] == 'x'
+      normal mp4|r `p
+    endif
+  elseif getline('.')[4] == '-' && getline('.')[5] == ' ' && getline('.')[6] == '[' && getline('.')[8] == ']'
+    if getline('.')[7] == ' '
+      normal mp8|rx`p
+    elseif getline('.')[7] == 'x'
+      normal mp8|r `p
+    endif
+  elseif getline('.')[8] == '-' && getline('.')[9] == ' ' && getline('.')[10] == '[' && getline('.')[12] == ']'
+    if getline('.')[11] == ' '
+      normal mp12|rx`p
+    elseif getline('.')[11] == 'x'
+      normal mp12|r `p
+    endif
+  endif
+  normal gj
+endfunction
+
+autocmd FileType markdown inoremap <cr> :call AddCheckboxOnCr()<cr>
+function! AddCheckboxOnCr()
+  if getline('.')[0] == '-' && getline('.')[1] == ' ' && getline('.')[2] == '[' && getline('.')[4] == ']' && getline('.')[3] == ' '
+    normal o- [ ] i
+    startinsert!
+  elseif getline('.')[0] == '-' && getline('.')[1] == ' ' && getline('.')[2] == '[' && getline('.')[4] == ']' && getline('.')[3] == 'x'
+    normal o- [ ] i
+    startinsert!
+  elseif getline('.')[4] == '-' && getline('.')[5] == ' ' && getline('.')[6] == '[' && getline('.')[8] == ']' && getline('.')[7] == ' '
+    normal o- [ ] i
+    startinsert!
+  elseif getline('.')[4] == '-' && getline('.')[5] == ' ' && getline('.')[6] == '[' && getline('.')[8] == ']' && getline('.')[7] == 'x'
+    normal o- [ ] i
+    startinsert!
+  elseif getline('.')[8] == '-' && getline('.')[9] == ' ' && getline('.')[10] == '[' && getline('.')[12] == ']' && getline('.')[11] == ' '
+    normal o- [ ] i
+    startinsert!
+  elseif getline('.')[8] == '-' && getline('.')[9] == ' ' && getline('.')[10] == '[' && getline('.')[12] == ']' && getline('.')[11] == 'x'
+    normal o- [ ] i
+    startinsert!
+  else
+    normal! a
+    startinsert
+  endif
+endfunction
+
+" safe {{{2
+" auto make safe.mkd unmodifiable
+autocmd BufRead,BufEnter *safe.mkd set nomodifiable
+
+" sh {{{2
+
+" automatically add header
+autocmd BufNewFile *.sh normal i#!/bin/sh
+
+" text {{{2
+
+" Disable syntax highlighting in favor of spell check
+autocmd BufNewFile,BufRead *.txt syntax enable | set spell
+autocmd BufLeave *.txt syntax enable
+
+" vim {{{2
+
+" Better opening lines to remove accidental comments
+autocmd FileType vim setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+
+" colorcolumn 100
+autocmd FileType vim setlocal colorcolumn=100
+
+" Auto clear whitespace
+autocmd BufWritePre *.vim,*vimrc* WhitespaceClear
+
+" Auto sourcing after saving
+autocmd BufWritePost *.vim,*vimrc* source %
+
+" Quick vim script for new functions
+autocmd BufNewFile,BufRead *.vim,*vimrc* inoreabbrev func function Function()<cr>endfunction<esc>O <esc>a
+
+" Quick vim script for new commands
+autocmd BufNewFile,BufRead *.vim,*vimrc* inoreabbrev comm command silent! call Function()<esc>0Ea
+
+" unmap end when leaving
+autocmd BufLeave *.vim,*vimrc* silent! iunabbrev func
+autocmd BufLeave *.vim,*vimrc* silent! iunabbrev comm
+

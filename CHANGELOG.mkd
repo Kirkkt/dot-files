@@ -1,0 +1,5 @@
+###### VERSION DATE
+- fish
+    - imported from ~/git/dot-files, basically working
+- vim
+    - imported from ~/git/dot-files, basically working
