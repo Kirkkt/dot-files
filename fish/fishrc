@@ -1,0 +1,1481 @@
+# bind {{{1
+# Edit current command buffer in vim and pipe back {{{2
+type _edit_command_buffer > /dev/null 2>&1;or function _edit_command_buffer --description 'Edit the command buffer in an external editor'
+  set -l f (mktemp)
+  if set -q f[1]
+    mv $f $f.fish
+    set f $f.fish
+  else
+  # We should never execute this block but better to be paranoid.
+    set f /tmp/fish.(echo %self).fish
+    touch $f
+  end
+  set -l p (commandline -C)
+  commandline -b > $f
+  if set -q EDITOR
+    eval $EDITOR $f
+  else
+    vim $f
+  end
+  commandline -r (cat $f)
+  commandline -C $p
+  command rm $f
+end
+
+# bindings {{{2
+function fish_user_key_bindings
+  bind \cx _edit_command_buffer
+  bind \ck history-token-search-backward
+  bind \ch prevd-or-backward-word
+  bind \cl nextd-or-forward-word
+end
+
+
+# PATH {{{1
+set PATH $PATH .
+
+# better defaults {{{1
+# better tree with ignore {{{2
+function tree
+  command tree -I 'node_modules' $argv | less -FRX
+end
+
+# abbr {{{1
+# abbr - directories {{{2
+abbr ,dd ~/github/dot-files/
+abbr ,dv ~/dev/
+abbr ,ds ~/git/stash
+abbr ,dq ~/git/stash/work-stuff/employment/quandoo
+abbr ,db ~/git/stash/projects/project-berlin-20180901/
+
+# abbr - files {{{2
+abbr ,ff ~/github/dot-files/fish/fishrc
+abbr ,fv ~/github/dot-files/vim/vimrc
+abbr ,fs ~/git/dot-files/safe/safe.mkd
+abbr ,fb ~/git/dot-files/notebooks/bookmarks.md
+abbr ,fd ~/git/dot-files/notebooks/my-diary.mkd
+abbr ,fq ~/git/dot-files/notebooks/quandoo.mkd
+
+# d {{{1
+# _d {{{2
+type _d > /dev/null 2>&1; or function _d
+  switch $argv[1]
+    # git dirs
+    case 'dot'
+      cd ~/github/dot-files/
+    case 'qpay-web'
+      cd ~/dev/qpay_web/
+    case 'web-dev'
+      cd ~/git/web-dev-examples/
+    case 'learn'
+      cd ~/git/dot-files/knowledge/learn/
+    case 'stash'
+      cd ~/git/stash/
+    case 'legacy'
+      cd ~/git/stash/legacy-notes/
+    case 'money'
+      cd ~/git/stash/money/
+    case 'vanguard'
+      cd ~/git/stash/money/vanguard/
+    case 'discover'
+      cd ~/git/stash/money/discover/
+    case 'chase'
+      cd ~/git/stash/money/chase/
+    case 'prosper'
+      cd ~/git/stash/money/prosper/
+    case 'tax'
+      cd ~/git/stash/money/tax/
+    case 'toptal'
+      cd ~/git/stash/work-stuff/employment/toptal/jobs/
+    case 'quandoo'
+      cd ~/git/stash/work-stuff/employment/quandoo
+    # system dirs
+    case 'download'
+      cd ~/Downloads/
+    case 'music'
+      cd ~/Music/
+    # personal dirs
+    case 'berlin'
+      cd ~/git/stash/projects/project-berlin-20180901/
+    case '*'
+      echo "unrecognized argument "{$argv}
+  end
+end
+
+# d - common complete {{{2
+set d_complete $d_complete chase
+set d_complete $d_complete discover
+set d_complete $d_complete dot
+set d_complete $d_complete download
+set d_complete $d_complete berlin
+set d_complete $d_complete learn
+set d_complete $d_complete legacy
+set d_complete $d_complete money
+set d_complete $d_complete music
+set d_complete $d_complete prosper
+set d_complete $d_complete quandoo
+set d_complete $d_complete stash
+set d_complete $d_complete tax
+set d_complete $d_complete toptal
+set d_complete $d_complete vanguard
+set d_complete $d_complete web-dev
+set d_complete $d_complete qpay-web
+
+# d-Linux {{{2
+if test (uname) = Linux
+  type d > /dev/null 2>&1; or function d
+    switch $argv[1]
+      case 'video'
+        cd ~/Videos/
+      case '*'
+        _d $argv
+    end
+  end
+  # set up auto completion, -c command name, -f no filename, -a accepted words
+  set d_complete $d_complete video
+  complete -c d -f -a "$d_complete"
+end
+
+# d-Mac {{{2
+if test (uname) = Darwin
+  # define OS-specific destinations here, and fall back to _d by default
+  type d > /dev/null 2>&1; or function d
+    switch $argv[1]
+      case 'video'
+        cd ~/Movies/
+      case 'work'
+        cd ~/Documents/work/
+      case '*'
+        _d $argv
+    end
+  end
+  # set up auto completion, -c command name, -f no filename, -a accepted words
+  set d_complete $d_complete video
+  set d_complete $d_complete work
+  complete -c d -f -a "$d_complete"
+end
+
+# e {{{1
+# _e {{{2
+type _e > /dev/null 2>&1; or function _e
+  switch $argv[1]
+    # bash
+    case 'brcm'
+      vim ~/git/dot-files/bash/bashrc-macbook
+    case 'brcl'
+      vim ~/git/dot-files/bash/bashrc-linux
+    # vim
+    case 'vrcr'
+      vim ~/.vimrc
+    # git dir files
+    case 'word'
+      vim ~/dev/german-flashcards/all-words.txt
+    case 'safe'
+      vim ~/git/dot-files/safe/safe.mkd
+    case 'git'
+      vim ~/git/dot-files/knowledge/learn/command-line/git/git.mkd
+    case 'fish'
+      vim ~/git/dot-files/knowledge/learn/command-line/fish/fish.mkd
+    case 'vim'
+      vim ~/git/dot-files/knowledge/learn/command-line/vim/vim.mkd
+    case 'prosper'
+      vim ~/git/dot-files/spreadsheets/wealth/prosper.csv
+    case 'net-worth'
+      vim ~/git/dot-files/spreadsheets/wealth/net-worth.csv
+    case 'bookmarks'
+      vim ~/git/dot-files/notebooks/bookmarks.md
+    case 'neobundle'
+      vim ~/git/dot-files/vim/0neobundle.vim
+    case 'learn'
+      vim ~/git/dot-files/knowledge/learn/inbox.txt
+    case 'notes'
+      vim ~/git/dot-files/notebooks/inbox.txt
+    case 'book'
+      vim ~/git/dot-files/notebooks/books.mkd
+    case 'kill'
+      vim ~/git/dot-files/lists/time-killer-list.mkd
+    case 'cn-safe'
+      vim ~/git/dot-files/safe/china-safe.mkd
+    case 'bash'
+      vim ~/git/dot-files/knowledge/learn/command-line/bash/bash.mkd
+    case 'diary'
+      vim ~/git/dot-files/notebooks/my-diary.mkd
+    case 'quandoo'
+      vim ~/git/dot-files/notebooks/quandoo.mkd
+    case 'berlin'
+      vim ~/git/stash/projects/project-berlin-20180901/berlin.mkd
+    case '*'
+      echo "unrecognized argument "{$argv}
+  end
+end
+
+# e - common complete {{{2
+set e_complete $e_complete bash
+set e_complete $e_complete berlin
+set e_complete $e_complete book
+set e_complete $e_complete bookmarks
+set e_complete $e_complete brcl
+set e_complete $e_complete brcm
+set e_complete $e_complete cn-investment
+set e_complete $e_complete cn-safe
+set e_complete $e_complete d
+set e_complete $e_complete diary
+set e_complete $e_complete e
+set e_complete $e_complete fish
+set e_complete $e_complete g
+set e_complete $e_complete git
+set e_complete $e_complete grep
+set e_complete $e_complete inner
+set e_complete $e_complete kill
+set e_complete $e_complete learn
+set e_complete $e_complete neobundle
+set e_complete $e_complete net-worth
+set e_complete $e_complete notes
+set e_complete $e_complete outer
+set e_complete $e_complete prosper
+set e_complete $e_complete q
+set e_complete $e_complete quandoo
+set e_complete $e_complete r
+set e_complete $e_complete safe
+set e_complete $e_complete tmux-conf
+set e_complete $e_complete vim
+set e_complete $e_complete vrcr
+set e_complete $e_complete word
+
+# e-Linux {{{2
+if test (uname) = Linux
+  type e > /dev/null 2>&1; or function e
+    switch $argv[1]
+      # bash root
+      case 'brcr'
+        vim ~/.bashrc
+      # fallback
+      case '*'
+        _e $argv
+    end
+  end
+  # set up auto completion, -c command name, -f no filename, -a accepted words
+  set e_complete $e_complete brcr
+  complete -c e -f -a "$e_complete"
+end
+
+# e-Mac {{{2
+if test (uname) = Darwin
+  type e > /dev/null 2>&1; or function e
+    switch $argv[1]
+      # bash root
+      case 'brcr'
+        vim ~/.bash_profile
+      # karabiner
+      case 'krcr'
+        vim ~/Library/Application\ Support/Karabiner/private.xml
+      case 'krcm'
+        vim ~/git/dot-files/karabiner/private.xml
+      # fallback
+      case '*'
+        _e $argv
+    end
+  end
+
+  set e_complete $e_complete brcr
+  set e_complete $e_complete krcr
+  set e_complete $e_complete krcm
+  # set up auto completion, -c command name, -f no filename, -a accepted words
+  complete -c e -f -a "$e_complete"
+end
+
+# g {{{1
+type g > /dev/null 2>&1; or function g
+  switch $argv[1]
+
+    # s {{{2
+    case 's'
+      set -e argv[1] # remove the first argument
+      git status $argv
+
+    # status-vim-open {{{2
+    case 'status-vim-open'
+      vim (git diff --name-only)
+
+    # diff {{{2
+    case 'd'
+      set -e argv[1] # remove the first argument
+      clear
+      if command --search diff-so-fancy > /dev/null do # check if command exists
+        git diff --color $argv | diff-so-fancy | less --tabs=4 -FRX
+      else
+        git diff $argv
+      end
+
+    case 'vd'
+      set -e argv[1] # remove the first argument
+      git difftool $argv
+
+    # a {{{2
+    case 'a'
+      set -e argv[1] # remove the first argument
+      git add $argv
+
+    # qcm {{{2
+    case 'qcm'
+      set -e argv[1] # remove the first argument
+      git add .
+      git add --all
+      if test -n "$argv" # if has more arguments
+        git commit -m $argv
+      else
+        git commit -m minor
+      end
+
+    # rv {{{2
+    case 'rv'
+      set -e argv[1] # remove the first argument
+      git checkout -- $argv
+
+    # co {{{2
+    case 'co'
+      set -e argv[1] # remove the first argument
+      git checkout $argv
+
+    # cob {{{2
+    case 'cob'
+      set -e argv[1] # remove the first argument
+      git checkout -b $argv
+
+    # rn {{{2
+    case 'rn'
+      set -e argv[1] # remove the first argument
+      git branch -m $argv
+
+    # de {{{2
+    case 'de'
+      set -e argv[1] # remove the first argument
+      git branch -D $argv
+
+    # br {{{2
+    case 'br'
+      set -e argv[1] # remove the first argument
+      git branch $argv
+
+    # lo {{{2
+    case 'lo'
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        git pull origin $argv
+      else
+        git pull origin master
+      end
+
+    # so {{{2
+    case 'so'
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        git push origin $argv
+      else
+        git push origin master
+      end
+
+    # ignore {{{2
+    case 'ignore'
+      rm -rf .gitignore
+      vim .gitignore -c 'normal iqignore<cr>' -c 'x'
+
+    # do-all {{{2
+    case 'do-all'
+      set -e argv[1] # remove the first argument
+      set -l directories \
+        ~/github/dot-files\
+        ~/git/dot-files\
+        ~/git/web-dev-examples\
+        ~/git/stash
+      for directory in $directories
+        pushd $directory; echo ''; echo '>>> '$directory' <<<'; eval $argv; popd
+      end
+
+    # sa {{{2
+    case 'sa'
+      g do-all git status
+
+    # da {{{2
+    case 'da'
+      g do-all git diff
+
+    # soa {{{2
+    case 'soa'
+      g do-all git push
+
+    # loa {{{2
+    case 'loa'
+      g do-all git pull
+
+    case '*'
+      git $argv
+  end
+end
+
+# complete {{{2
+set g_complete $g_complete a
+set g_complete $g_complete br
+set g_complete $g_complete co
+set g_complete $g_complete cob
+set g_complete $g_complete d
+set g_complete $g_complete da
+set g_complete $g_complete de
+set g_complete $g_complete do-all
+set g_complete $g_complete ignore
+set g_complete $g_complete lo
+set g_complete $g_complete loa
+set g_complete $g_complete qcm
+set g_complete $g_complete rn
+set g_complete $g_complete rv
+set g_complete $g_complete s
+set g_complete $g_complete sa
+set g_complete $g_complete so
+set g_complete $g_complete soa
+set g_complete $g_complete status-vim-open
+set g_complete $g_complete vd
+
+# set up auto completion, -c command name, -f no filename, -a accepted words
+complete -c g -a "$g_complete"
+
+# greps {{{1
+
+# Cut long lines {{{2
+type cutlonglines > /dev/null 2>&1; or function cutlonglines
+  awk '{ if (length($0) < 1000) print }'
+end
+
+# cs {{{2
+type cs > /dev/null 2>&1; or function cs
+  # set-up {{{3
+  set -l cs_ignore_files $cs_ignore_files yarn.lock
+  set -l cs_ignore_dirs $cs_ignore_dirs __generated__
+  set -l cs_ignore_dirs $cs_ignore_dirs build
+  set -l cs_ignore_dirs $cs_ignore_dirs compiler
+  set -l cs_ignore_dirs $cs_ignore_dirs dist
+  set -l cs_ignore_dirs $cs_ignore_dirs dist-deploy
+  set -l cs_ignore_dirs $cs_ignore_dirs dist-dev
+  set -l cs_ignore_dirs $cs_ignore_dirs external
+  set -l cs_ignore_dirs $cs_ignore_dirs node_modules
+  set -l cs_ignore_dirs $cs_ignore_dirs .git
+  set -l namespace \
+    (bash -c "cat /dev/urandom|strings|grep -o '[[:alnum:]]'|head -n 12|tr -d '\n'; echo ")
+  set -l grep_result0 /tmp/grep_result_{$namespace}0
+  set -l grep_result1 /tmp/grep_result_{$namespace}1
+
+  rm -rf $grep_result0
+  rm -rf $grep_result1
+
+  # declaration {{{3
+  set -l cs_case_option
+  set -l cs_color_option
+  set -l cs_keywords
+  set -l cs_pattern *
+  set -l cs_no_case_option
+  set -l cs_no_less_option
+  set -l cs_no_recur_option
+  set -l cs_recur_option
+  set -l cs_show_around_option
+  set -l cs_show_long_option
+  set -l cs_show_error_option
+  set -l cs_vim_inspect_option
+  set -l cs_around_option
+  set -l cs_error_option
+
+  # defaults {{{3
+  set cs_color_option 'always'
+  set cs_no_case_option 'false'
+  set cs_no_less_option 'false'
+  set cs_no_recur_option 'false'
+  set cs_show_around_option 'false'
+  set cs_show_long_option 'false'
+  set cs_show_error_option 'false'
+  set cs_vim_inspect_option 'false'
+
+  # parsing arguments {{{3
+  for i in (seq 1 (count $argv))
+    if test -n "$argv[$i]"
+      switch $argv[$i]
+        case 'no-color'
+          set cs_color_option 'never'
+        case 'case'
+          set cs_no_case_option '-i'
+        case 'no-recur'
+          set cs_no_recur_option 'true'
+        case 'show-long'
+          set cs_show_long_option 'true'
+        case 'show-error'
+          set cs_show_error_option 'true'
+        case 'no-less'
+          set cs_no_less_option 'true'
+        case 'show-around'
+          set cs_show_around_option 'true'
+        case 'vim-inspect'
+          set cs_color_option 'never'
+          set cs_vim_inspect_option 'true'
+          set cs_no_less_option 'true'
+        case 'keyword'
+          set cs_keywords $cs_keywords $argv[(math $i+1)]
+          set -e argv[(math $i+1)]
+        case 'pattern'
+          for j in (seq 1 $i)
+            if [ $argv[1] = pattern ]
+              set -e argv[1]
+              break
+            end
+            set -e argv[1]
+          end
+          set cs_pattern $argv
+          for j in (seq 1 (count $argv))
+            set -e argv[1]
+          end
+        case '*'
+          set cs_keywords $cs_keywords $argv[$i]
+      end
+    end
+  end
+
+  if test -n "$cs_keywords"
+    cd . # no-op
+  else
+    echo 'no search keywords, please check your argv'
+    return
+  end
+  if test -n "$cs_pattern"
+    cd . # no-op
+  else
+    echo 'no search pattern, please check your argv'
+    return
+  end
+
+  # construct options {{{3
+  if [ $cs_no_case_option = 'false' ]
+    set cs_case_option '-i'
+  end
+  if [ $cs_no_recur_option = 'false' ]
+    set cs_recur_option '-r'
+  end
+  if [ $cs_show_around_option = 'true' ]
+    set cs_around_option '-C 5'
+  end
+  if [ $cs_show_error_option = 'false' ]
+    set cs_error_option '-s'
+  end
+  grep -nIE \
+    $cs_case_option \
+    $cs_recur_option \
+    $cs_around_option \
+    $cs_error_option \
+    --color=$cs_color_option \
+    --exclude-dir=$cs_ignore_dirs \
+    --exclude=$cs_ignore_files \
+    $cs_keywords[1] $cs_pattern > $grep_result0
+  if [ $cs_show_long_option = 'false' ]
+    mv $grep_result0 $grep_result1
+    cat $grep_result1| cutlonglines > $grep_result0
+  end
+  if [ $cs_vim_inspect_option = 'true' ]
+    vim $grep_result0 \
+      -c 'silent g/'$cs_keywords[1]'/norm l' \
+      -c 'norm 0gg' \
+      -c 'sort' \
+      -c 'nnoremap <cr> :OpenAllFilesInGrepResult<cr>'
+  else if [ $cs_no_less_option = 'false' ]
+    cat $grep_result0 | less -FRX
+  else
+    cat $grep_result0
+  end
+end
+
+# fish-complete {{{3
+complete -c cs -f -a \
+  'no-color case no-recur show-long show-around no-less vim-inspect show-error keyword'
+
+# fs {{{2
+type fs > /dev/null 2>&1; or function fs
+  # set-up {{{3
+  set -l namespace \
+    (bash -c "cat /dev/urandom|strings|grep -o '[[:alnum:]]'|head -n 12|tr -d '\n'; echo ")
+  set -l grep_result0 /tmp/grep_result_{$namespace}0
+  set -l grep_result1 /tmp/grep_result_{$namespace}1
+  rm -rf $grep_result0
+  rm -rf $grep_result1
+
+  # declaration {{{3
+  set -l fs_color_option
+  set -l fs_no_less_option
+  set -l fs_no_case_option
+  set -l fs_vim_open_option
+  set -l fs_keywords
+  set -l fs_case_option
+
+  # defaults {{{3
+  set fs_color_option 'always'
+  set fs_no_less_option 'false'
+  set fs_no_case_option 'false'
+  set fs_vim_open_option 'false'
+
+  # parsing arguments {{{3
+  for i in (seq 1 (count $argv))
+    switch $argv[$i]
+      case 'no-color'
+        set fs_color_option 'never'
+      case 'no-less'
+        set fs_no_less_option 'true'
+      case 'case'
+        set fs_no_case_option '-i'
+      case 'vim-open'
+        set fs_vim_open_option 'true'
+        set fs_no_less_option 'true'
+        set fs_color_option 'never'
+      case '*'
+        set fs_keywords $fs_keywords $argv[$i]
+    end
+  end
+
+  # construct options {{{3
+  if [ $fs_no_case_option = 'false' ]
+    set fs_case_option '-i'
+  end
+  find . -type f \
+    -not -path '/.git/*' \
+    -not -path '*/build/*' \
+    -not -path '*/node_modules/*' \
+    -not -path '*/compiler/*' \
+    -not -path '*/dist/*' \
+    -not -path '*/dist-dev/*' \
+    -not -path '*/dist-deploy/*' \
+    -not -path '*/external/*' \
+    | grep $fs_case_option --color=$fs_color_option $fs_keywords > $grep_result0
+  if [ $fs_vim_open_option = 'true' ]
+    cat $grep_result0 | r vim-open
+  else if [ $fs_no_less_option = 'false' ]
+    cat $grep_result0 | less -FRX
+  else
+    cat $grep_result0
+  end
+end
+# fish-complete {{{3
+complete -c fs -f -a 'no-color case no-less vim-open'
+
+# linux or mac only {{{1
+if test (uname) = Linux
+# tmux: fix 256 colors on linux {{{2
+  function tmux
+    command tmux -2 $argv
+  end
+
+# map gnome-open to open {{{2
+  type open > /dev/null 2>&1; or function open
+    gnome-open $argv
+  end
+else
+
+# Disable svn for good {{{2
+  function svn
+  end
+
+# la {{{2
+  function la
+    # -f means unsorted, I prefer it sorted alphabetically
+    ls -alh $argv
+  end
+
+  type shuf > /dev/null 2>&1; or function shuf
+    gshuf $argv
+  end
+end
+
+# prompt {{{1
+# process git status {{{2
+type _fish_prompt_parse_git_branch > /dev/null 2>&1; or function _fish_prompt_parse_git_branch
+  set -l fish_git_dirty_color red
+  set -l fish_git_not_dirty_color green
+  # define branch name
+  set -l branch (git branch 2> /dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/')
+
+  # define git_diff (we only care about whether it's empty)
+  set -l git_diff (git diff)
+
+  # apply different colors based on whether the git branch is dirty
+  if test -n "$git_diff"
+    echo (set_color $fish_git_dirty_color)$branch(set_color normal)
+  else
+    echo (set_color $fish_git_not_dirty_color)$branch(set_color normal)
+  end
+end
+
+# assemble fish prompt {{{2
+function fish_prompt
+  set -l fish_de_learning magenta
+  set -l git_dir (git rev-parse --git-dir 2> /dev/null)
+  printf '%s%s%s\n' (set_color $fish_de_learning) (shuf ~/github/dot-files/fish/fish-prompt-german.txt|head -1) (set_color normal)
+  printf '%s%s%s@%s%s%s(%s)' (set_color $fish_color_cwd) (prompt_pwd) (set_color normal) (set_color $fish_color_cwd) (date +"%H:%M:%S") (set_color normal) (r t day | wc -l | sed -e 's/ *//')
+  if test -n "$git_dir"
+    printf '@%s' (_fish_prompt_parse_git_branch)
+  end
+  printf '>'
+end
+
+# q {{{1
+source ~/git/dot-files/fish/0fishrc-q
+
+# r {{{1
+# internal functions {{{2
+# _custom_t_check_if_list_exists {{{3
+function _custom_t_check_if_list_exists
+  set -l known_lists (ls ~/git/dot-files/lists/t-tasks/)
+  for i in (seq (count $known_lists))
+    if test $known_lists[$i] = $argv
+      return
+    end
+  end
+
+  echo 'task list '$argv' not found, do you want to create a new one? (y/N)'
+  read -l -n 1 confirm
+  if not [ $confirm = y ]; and not [ $confirm = Y ]
+    echo "task list $argv not created, bye"
+    mkdir /tmp 2> /dev/null # deliberately create error
+  end
+end
+
+# _custom_t_copy_or_move_tasks {{{3
+function _custom_t_copy_or_move_tasks
+  set -q argv[4] # if has not enough arguments
+    or echo 'format: r t-move-from-to-id from-list to-list id'
+  set -q argv[4] # if has not enough arguments
+    or return
+  _custom_t_check_if_list_exists $argv[2]; or return
+  _custom_t_check_if_list_exists $argv[3]; or return
+  set -l t_copy_or_move_command $argv[1]
+  set -e argv[1] # remove the first argument
+  set -l t_copy_or_move_from $argv[1]
+  set -e argv[1] # remove the first argument
+  set -l t_copy_or_move_to $argv[1]
+  set -e argv[1] # remove the first argument
+  set -l t_copy_or_move_id $argv[1]
+  ~/git/dot-files/t.py --task-dir ~/git/dot-files/lists/t-tasks --list $t_copy_or_move_from |\
+    grep \^$t_copy_or_move_id\ |\
+    grep -q '[^[:space:]]'; or echo "id $t_copy_or_move_id in list $t_copy_or_move_from not found"
+  ~/git/dot-files/t.py --task-dir ~/git/dot-files/lists/t-tasks --list $t_copy_or_move_from |\
+    grep \^$t_copy_or_move_id\ |\
+    grep -q '[^[:space:]]'; or return
+  ~/git/dot-files/t.py --task-dir ~/git/dot-files/lists/t-tasks --list $t_copy_or_move_to \
+    (~/git/dot-files/t.py --task-dir ~/git/dot-files/lists/t-tasks --list $t_copy_or_move_from |\
+    grep \^$t_copy_or_move_id\ |\
+    vim - -esbnN -c 'norm 2daW'  -c 'x!/dev/stderr' 2>&1 > /dev/null )
+  if [ $t_copy_or_move_command = 't-move-from-to-id' ]
+    ~/git/dot-files/t.py --task-dir ~/git/dot-files/lists/t-tasks --list $t_copy_or_move_from -f $t_copy_or_move_id
+  end
+end
+
+# _custom_stopwatch {{{3
+function _custom_stopwatch
+  function stopwatch_prepend_zero
+    if test $argv -lt 10
+      echo 0$argv
+    else
+      echo $argv
+    end
+  end
+  function _stopwatch_with_name
+    rm -rf /tmp/stopwatch_output_{$argv}
+    time cat 2> /tmp/stopwatch_output_{$argv}
+    set -l total_second (cat /tmp/stopwatch_output_{$argv} |r vim-pipe 1d norm\ frD 's/\\s*//')
+    set -l total_second_integer (echo $total_second | r vim-pipe norm\ f\.D)
+    set -l h (stopwatch_prepend_zero (expr $total_second_integer / 3600))
+    set -l m (stopwatch_prepend_zero (expr $total_second_integer / 60 \% 60))
+    set -l s (stopwatch_prepend_zero (expr $total_second_integer \% 60))
+    echo $h:$m:$s $argv
+  end
+  if test -n "$argv" # if has more arguments
+    _stopwatch_with_name $argv[1]
+  else
+    _stopwatch_with_name 'default'
+  end
+end
+
+# _r - all OS {{{2
+type _r > /dev/null 2>&1; or function _r
+  switch $argv[1]
+
+    # clear-junk {{{3
+    case 'clear-junk'
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        pushd $argv
+        command rm -f \.{_*,DS_Store}
+        popd
+      else
+        command rm -f \.{_*,DS_Store}
+      end
+
+    case 'clear-junk-one-level'
+      set -e argv[1] # remove the first argument
+      r clear-junk $argv
+      ls -l $argv | vim - -c 'runtime! 9manual/clearJunkOneLevel.vim' \
+          -c 'silent! call ClearJunkOneLevelFunction()'
+      bash /tmp/vim-gen-clearJunkOneLevel.sh
+
+    # cut-file-name {{{3
+    case 'cut-file-name'
+      cut -f1 -d: | sort -u
+
+    # cut-ps-id {{{3
+    case 'cut-ps-id'
+      r vim-pipe 'g/./normal daWW8caW : ' 'g/\/.*\/.*\/.*\//normal 4f/D'
+
+    # kill-all {{{3
+    case 'kill-all'
+      rm -rf /tmp/vim-gen-kill-all
+      r cut-ps-id | r vim-pipe 'g/./normal f:d$' 'g/./normal Ikill -9 ' 'w! /tmp/vim-gen-kill-all'
+      fish /tmp/vim-gen-kill-all
+
+    # rename files {{{3
+    case 'remove-single-quote-from-file-name'
+      set -e argv[1] # remove the first argument
+      ls -l $argv | vim - -c 'runtime! 9manual/massRn.vim' \
+        -c 'silent! call RemoveSingleQuoteFromFileNameFunction()'
+      bash /tmp/vim-gen-removeSingleQuoteFromFileName.sh
+
+    case 'do-this-to-file-name'
+      set -e argv[1] # remove the first argument
+      r remove-single-quote-from-file-name .
+      echo $argv > /tmp/doThisToFileName
+      vim -c 'runtime! 9manual/massRn.vim' -c 'silent! call DoThisToFileNameFunction()'
+      bash /tmp/vim-gen-doThisToFileName.sh
+
+    # generate-random-password {{{3
+    case 'generate-random-password'
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        command bash -c "cat /dev/urandom|strings|grep -o '[[:alnum:]]' | head -n "$argv" |tr -d '\n'; echo "
+      else
+        command bash -c "cat /dev/urandom|strings|grep -o '[[:alnum:]]' | head -n 12 |tr -d '\n'; echo "
+      end
+
+    # advanced ls {{{3
+    case 'la-music'
+      set -e argv[1] # remove the first argument
+      ls -lfh *.{m4a,mp3,wma}
+
+    case 'la-video'
+      set -e argv[1] # remove the first argument
+      ls -lfh *.{mp4,m4v,mkv,avi,rmvb,flv,wmv,srt}
+
+    case 'list-directories-by-size'
+      node ~/git/dot-files/nodejs/r-list-directories-by-size-pipe.js ( du -cks * | sort -rn) | less -FRX
+
+    case 'list-files-by-size'
+      ls -Slhp | less -FRX
+
+    # mkdir-cd {{{3
+    case 'mkdir-cd'
+      set -e argv[1] # remove the first argument
+      mkdir -p $argv
+      cd $argv
+
+    # mv-music and mv-video {{{3
+    case 'mv-music'
+      set -e argv[1] # remove the first argument
+      mv -v *.{m4a,mp3,wma} ~/Music/ 2>/dev/null
+
+    case 'mv-video'
+      set -e argv[1] # remove the first argument
+      if test (uname) = Darwin
+        mv -v *.{mp4,m4v,mkv,avi,rmvb,flv,wmv,srt} ~/Movies/ 2>/dev/null
+      end
+      if test (uname) = Linux
+        mv -v *.{mp4,m4v,mkv,avi,rmvb,flv,wmv,srt} ~/Videos/ 2>/dev/null
+      end
+
+    # notify {{{3
+    # usage: r notify "some message"
+    case 'notify'
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        cd .
+      else
+        set argv 'hello'
+      end
+      if test (uname) = Darwin
+        osascript -e "display notification \" \" with title \""$argv"\""
+      end
+      if test (uname) = Linux
+        notify-send $argv
+      end
+
+    # countdown {{{3
+    case 'countdown'
+      set -e argv[1] # remove the first argument
+      sh ~/git/dot-files/bash/manual/countdown.sh $argv
+
+    case 'pomodoro-work'
+      sh ~/git/dot-files/bash/manual/countdown.sh "00:25:00"; r notify "work session is over, take some rest!"
+
+    case 'pomodoro-short-break'
+      sh ~/git/dot-files/bash/manual/countdown.sh "00:05:00"; r notify "short break is over, start working!"
+
+    case 'pomodoro-long-break'
+      sh ~/git/dot-files/bash/manual/countdown.sh "00:15:00"; r notify "long break is over, start working!"
+
+    # stopwatch {{{3
+    case 'stopwatch'
+      set -e argv[1] # remove the first argument
+      # on mac: to run multiple stopwatches in the same time, do:
+      #    r stopwatch stopwatch_name_1
+      # and in another terminal, do:
+      #    r stopwatch stopwatch_name_2
+      # no need to do this on linux
+      if test (uname) = Darwin
+        _custom_stopwatch $argv
+      else
+        time -f "%E $argv" cat
+      end
+
+    # prosper {{{3
+    case 'prosper'
+      pushd ~/git/dot-files/selenium/
+      yarn prosper
+      popd
+
+    # python-server {{{3
+    case 'python-server'
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        python -m SimpleHTTPServer $argv
+      else
+        python -m SimpleHTTPServer 2534
+      end
+
+    # show-last-command {{{3
+    case 'show-last-command'
+      history | head -n 1
+
+    # start-bash {{{3
+    case 'start-bash'
+      bash --noprofile --norc
+
+    # t {{{3
+    case 't'
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        _custom_t_check_if_list_exists $argv[1]; or return
+        ~/git/dot-files/t.py --task-dir ~/git/dot-files/lists/t-tasks --list $argv
+      else
+        pushd ~/git/dot-files/lists/t-tasks/
+        tail (ls | grep -v 'shopping\|some-day\|kill-time\|m-f') | grep -E --color ==\>\ \.\*\ \<==\|\$
+        popd
+      end
+
+    case 't-move-from-to-id'
+      _custom_t_copy_or_move_tasks $argv
+
+    case 't-dup-from-to-id'
+      _custom_t_copy_or_move_tasks $argv
+
+    case 't-morning'
+      rm /tmp/t_morning_results 2> /dev/null
+      ~/git/dot-files/t.py --task-dir ~/git/dot-files/lists/t-tasks --list m-f | r vim-pipe 'g/./norm wD0i r t-dup-from-to-id m-f day ' >/tmp/t_morning_results
+      fish /tmp/t_morning_results
+
+    # tmux-reattach {{{3
+    case 'tmux-reattach'
+      set -e argv[1] # remove the first argument
+      tmux attach -t 0 $argv
+
+    # vim {{{3
+    case 'vim-empty-scratch'
+      command rm -f /tmp/tmp
+      vim -S ~/git/dot-files/vim/9manual/empty-scratch.vim /tmp/tmp
+
+    case 'vim-open'
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        # the prefered way on linux because vo sometimes fails when used with piping
+        eval $argv "| vim - -c 'runtime! 9manual/vimAndOpen.vim' -c 'silent! call VimAndOpenFunction()'"
+      else
+        vim - -c 'runtime! 9manual/vimAndOpen.vim' -c 'silent! call VimAndOpenFunction()'
+      end
+
+    case 'vim-pipe'
+      set -e argv[1] # remove the first argument
+      eval "vim - -esbnN " '-c \''$argv'\'' " -c 'x!/dev/stderr' 2>&1 > /dev/null"
+
+    case 'vim-scratch'
+      command rm -f /tmp/tmp
+      vim -S ~/git/dot-files/vim/9manual/clipboard-scratch.vim /tmp/tmp
+
+    case 'vim-vanilla'
+      set -e argv[1] # remove the first argument
+      vim -u NONE -N $argv
+
+    # clip and paste {{{3
+    case 'clip'
+      set -e argv[1] # remove the first argument
+      if test (uname) = Linux
+        xclip -sel clip $argv
+      end
+      if test (uname) = Darwin
+        pbcopy
+      end
+
+    case 'paste'
+      if test (uname) = Linux
+        xclip -sel clip -o
+      end
+      if test (uname) = Darwin
+        pbpaste
+      end
+
+    # quandoo {{{3
+    case 'qr-desktop-localhost'
+      cd ~/dev/qr-code-gen/
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        env ENV=localhost TABLE={$argv} yarn run desktop
+      else
+        env ENV=localhost TABLE=51 yarn run desktop
+      end
+      cd -
+    case 'qr-desktop-test'
+      cd ~/dev/qr-code-gen/
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        env ENV=test TABLE={$argv} yarn run desktop
+      else
+        env ENV=test TABLE=51 yarn run desktop
+      end
+      cd -
+    case 'qr-desktop-qa'
+      cd ~/dev/qr-code-gen/
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        env ENV=qa TABLE={$argv} yarn run desktop
+      else
+        env ENV=qa TABLE=51 yarn run desktop
+      end
+      cd -
+    case 'qr-desktop-prod'
+      cd ~/dev/qr-code-gen/
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        env ENV=prod TABLE={$argv} yarn run desktop
+      else
+        env ENV=prod TABLE=51 yarn run desktop
+      end
+      cd -
+    case 'qr-mobile-localhost'
+      cd ~/dev/qr-code-gen/
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        env ENV=localhost TABLE={$argv} yarn run qr
+      else
+        env ENV=localhost TABLE=51 yarn run qr
+      end
+      cd -
+    case 'qr-mobile-test'
+      cd ~/dev/qr-code-gen/
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        env ENV=test TABLE={$argv} yarn run qr
+      else
+        env ENV=test TABLE=51 yarn run qr
+      end
+      cd -
+    case 'qr-mobile-qa'
+      cd ~/dev/qr-code-gen/
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        env ENV=qa TABLE={$argv} yarn run qr
+      else
+        env ENV=qa TABLE=51 yarn run qr
+      end
+      cd -
+    case 'qr-mobile-prod'
+      cd ~/dev/qr-code-gen/
+      set -e argv[1] # remove the first argument
+      if test -n "$argv" # if has more arguments
+        env ENV=prod TABLE={$argv} yarn run qr
+      else
+        env ENV=prod TABLE=51 yarn run qr
+      end
+      cd -
+    case 'mongo-drop-table'
+      mongo "mongodb+srv://adg:7lhoo68HXL2d47kZ@cluster0-qldrt.mongodb.net/qpay" -eval "db['bills.iE7x6ddT.51'].drop()"
+      mongo "mongodb+srv://adg:7lhoo68HXL2d47kZ@cluster0-qldrt.mongodb.net/qpay" -eval "db['bills.iE7x6ddT.2'].drop()"
+      mongo "mongodb+srv://adg:7lhoo68HXL2d47kZ@qpay-qa-qldrt.mongodb.net/qpay" -eval "db['bills.iE7x6ddT.51'].drop()"
+      mongo "mongodb+srv://adg:7lhoo68HXL2d47kZ@qpay-qa-qldrt.mongodb.net/qpay" -eval "db['bills.iE7x6ddT.2'].drop()"
+      mongo "mongodb+srv://adg:7lhoo68HXL2d47kZ@cluster0-qldrt.mongodb.net/qpay" -eval "db['bills.iE7xMzrT.51'].drop()"
+      mongo "mongodb+srv://adg:7lhoo68HXL2d47kZ@cluster0-qldrt.mongodb.net/qpay" -eval "db['bills.iE7xMzrT.2'].drop()"
+      mongo "mongodb+srv://adg:7lhoo68HXL2d47kZ@qpay-qa-qldrt.mongodb.net/qpay" -eval "db['bills.iE7xMzrT.51'].drop()"
+      mongo "mongodb+srv://adg:7lhoo68HXL2d47kZ@qpay-qa-qldrt.mongodb.net/qpay" -eval "db['bills.iE7xMzrT.2'].drop()"
+    case 'mongo-list-test'
+      mongo "mongodb+srv://adg:7lhoo68HXL2d47kZ@cluster0-qldrt.mongodb.net/qpay" -eval "db.getCollectionNames()"
+    case 'mongo-list-qa'
+      mongo "mongodb+srv://adg:7lhoo68HXL2d47kZ@qpay-qa-qldrt.mongodb.net/qpay" -eval "db.getCollectionNames()"
+
+    # fallback {{{3
+    case '*'
+      echo "subcommand $argv[1] not found"
+  end
+end
+
+# complete - all OS {{{3
+set r_complete $r_complete clear-junk
+set r_complete $r_complete clear-junk-one-level
+set r_complete $r_complete clip
+set r_complete $r_complete countdown
+set r_complete $r_complete cut-file-name
+set r_complete $r_complete cut-ps-id
+set r_complete $r_complete do-this-to-file-name
+set r_complete $r_complete generate-random-password
+set r_complete $r_complete la-music
+set r_complete $r_complete la-video
+set r_complete $r_complete list-directories-by-size
+set r_complete $r_complete list-files-by-size
+set r_complete $r_complete mkdir-cd
+set r_complete $r_complete mongo-drop-table
+set r_complete $r_complete mongo-list-qa
+set r_complete $r_complete mongo-list-test
+set r_complete $r_complete mv-music
+set r_complete $r_complete mv-video
+set r_complete $r_complete notify
+set r_complete $r_complete paste
+set r_complete $r_complete pomodoro-long-break
+set r_complete $r_complete pomodoro-short-break
+set r_complete $r_complete pomodoro-work
+set r_complete $r_complete prosper
+set r_complete $r_complete python-server
+set r_complete $r_complete qr-desktop-localhost
+set r_complete $r_complete qr-desktop-prod
+set r_complete $r_complete qr-desktop-qa
+set r_complete $r_complete qr-desktop-test
+set r_complete $r_complete qr-mobile-localhost
+set r_complete $r_complete qr-mobile-prod
+set r_complete $r_complete qr-mobile-qa
+set r_complete $r_complete qr-mobile-test
+set r_complete $r_complete remove-single-quote-from-file-name
+set r_complete $r_complete show-last-command
+set r_complete $r_complete start-bash
+set r_complete $r_complete stopwatch
+set r_complete $r_complete t
+set r_complete $r_complete t-dup-from-to-id
+set r_complete $r_complete t-morning
+set r_complete $r_complete t-move-from-to-id
+set r_complete $r_complete tmux-reattach
+set r_complete $r_complete vim-empty-scratch
+set r_complete $r_complete vim-open
+set r_complete $r_complete vim-pipe
+set r_complete $r_complete vim-scratch
+set r_complete $r_complete vim-vanilla
+
+# r - Linux {{{2
+if test (uname) = Linux
+  type r > /dev/null 2>&1; or function r
+    switch $argv[1]
+
+      # find-dup-files-by-size {{{3
+      case 'find-dup-files-by-size'
+        set -l DUP_FILE_SIZE
+        set -e argv[1] # remove the first argument
+        if test -n "$argv" # if has more arguments
+          set DUP_FILE_SIZE $argv
+        else
+          set DUP_FILE_SIZE 1M
+        end
+        rm -rf /tmp/vim-gen-deletedupbysize
+        bash -c 'find -not -empty -type f -size +'$DUP_FILE_SIZE' -printf "%s\n" | sort -rn | uniq -d | xargs -I{} -n1 find -type f -size {}c -printf "%s %p\n" | sort' > /tmp/vim-gen-deletedupbysize
+        vim /tmp/vim-gen-deletedupbysize -c 'nmap <up> ddo<esc>j' -c 'nmap <down> jddO<esc>j' -c 'g/./normal wi"' -c 'g/./normal A"' -c 'g/./normal ciwrm -rfv' -c 'w' -c '0'
+
+      case 'find-dup-files-by-size-clear'
+        sh /tmp/vim-gen-deletedupbysize
+
+      case 'find-dup-files-by-size-show'
+        less -FRX /tmp/vim-gen-deletedupbysize
+
+      # map-capslock-to-esc {{{3
+      case 'map-capslock-to-esc'
+        setxkbmap -option caps:escape
+
+      case 'map-capslock-to-esc-restore'
+        setxkbmap -option
+
+      # pipe-to-image {{{3
+      case 'pipe-to-image'
+        convert label:@- /tmp/temp.png
+
+      # update {{{3
+      case 'update'
+        sudo apt-get update
+        sudo apt-get dist-upgrade
+        npm i -g create-react-app lerna yarn npm
+
+      # screencast {{{3
+      case 'screencast-cast'
+        # r screencast-cast {output.flle.name}? {height}x{width}?
+        set -l r_screencast_cast_output
+        set -l r_screencast_cast_resolution
+        set -e argv[1]
+        if test -n "$argv" # if has more arguments
+          set r_screencast_cast_output $argv[1]
+          set -e argv[1]
+        else
+          set r_screencast_cast_output ~/Videos/cast.mp4
+        end
+        if test -n "$argv" # if has more arguments
+          set r_screencast_cast_resolution $argv[1]
+          set -e argv[1]
+        else if test (hostname) = kirkkt-Aspire-ES1-111M
+          set r_screencast_cast_resolution "1366x768"
+        else if test (hostname) = kirkkt-desktop
+          set r_screencast_cast_resolution "1920x1080"
+        else
+          set r_screencast_cast_resolution "1366x768"
+        end
+        ffmpeg -f x11grab -r 30 -s $r_screencast_cast_resolution -i :0.0 \
+          -acodec aac -vcodec libx264 -crf 0 -preset medium $r_screencast_cast_output
+        open $r_screencast_cast_output 2> /dev/null
+
+      case 'screencast-chop'
+        # r screencast-chop {start time in seconds} {end time in seconds} {input.file.name}? {output.file.name}?
+        set -q argv[3] # if has not enough arguments
+          or echo 'format: r screencast-chop {start time in seconds} {end time in seconds} {input.file.name}? {output.file.name}?'
+        set -q argv[3] # if has not enough arguments
+          or return
+        set -l r_screencast_chop_start
+        set -l r_screencast_chop_end
+        set -l r_screencast_chop_input
+        set -l r_screencast_chop_output
+        set -e argv[1]
+        set r_screencast_chop_start $argv[1]
+        set -e argv[1]
+        set r_screencast_chop_end $argv[1]
+        set -e argv[1]
+        if test -n "$argv" # if has more arguments
+          set r_screencast_chop_input $argv[1]
+          set -e argv[1]
+        else
+          set r_screencast_chop_input ~/Videos/cast.mp4
+        end
+        if test -n "$argv" # if has more arguments
+          set r_screencast_chop_output $argv[1]
+          set -e argv[1]
+        else
+          set r_screencast_chop_output ~/Videos/chop.mp4
+        end
+        ffmpeg -i $r_screencast_chop_input -ss $r_screencast_chop_start -to $r_screencast_chop_end \
+          -c copy $r_screencast_chop_output
+        open $r_screencast_chop_output 2> /dev/null
+
+      case 'screencast-join'
+        # r screencast-chop {first.file.name} {second.file.name} {output.file.name}?
+        set -q argv[3] # if has not enough arguments
+          or echo 'format: r screencast-chop {first.file.name} {second.file.name} {output.file.name}?'
+        set -q argv[3] # if has not enough arguments
+          or return
+        set -l r_screencast_join_first
+        set -l r_screencast_join_second
+        set -l r_screencast_join_output
+        set -e argv[1]
+        set r_screencast_join_first $argv[1]
+        set -e argv[1]
+        set r_screencast_join_second $argv[1]
+        set -e argv[1]
+        if test -n "$argv" # if has more arguments
+          set r_screencast_join_output $argv[1]
+          set -e argv[1]
+        else
+          set r_screencast_join_output ~/Videos/join.mp4
+        end
+        ffmpeg -i $r_screencast_join_first -c copy -bsf:v h264_mp4toannexb -f mpegts intermediate1.ts
+        ffmpeg -i $r_screencast_join_second -c copy -bsf:v h264_mp4toannexb -f mpegts intermediate2.ts
+        ffmpeg -i "concat:intermediate1.ts|intermediate2.ts" -c copy -bsf:a aac_adtstoasc $r_screencast_join_output
+        rm intermediate1.ts intermediate2.ts
+        open $r_screencast_join_output 2> /dev/null
+
+      # fallback {{{3
+      case '*'
+        _r $argv
+    end
+  end
+
+  # complete - linux {{{3
+  set r_complete $r_complete find-dup-files-by-size
+  set r_complete $r_complete find-dup-files-by-size-clear
+  set r_complete $r_complete find-dup-files-by-size-show
+  set r_complete $r_complete map-capslock-to-esc
+  set r_complete $r_complete map-capslock-to-esc-restore
+  set r_complete $r_complete pipe-to-image
+  set r_complete $r_complete update
+  set r_complete $r_complete screencast-cast
+  set r_complete $r_complete screencast-chop
+  set r_complete $r_complete screencast-join
+end
+
+# r - Mac {{{2
+if test (uname) = Darwin
+  type r > /dev/null 2>&1;or function r
+    switch $argv[1]
+
+      # chrome {{{3
+      case 'chrome'
+        set -e argv[1] # remove the first argument
+        open -a Google\ Chrome $argv
+
+      # code {{{3
+      case 'code'
+        set -e argv[1] # remove the first argument
+        open -a Visual\ Studio\ Code $argv
+
+      # clear-item-cache {{{3
+      case 'clear-item-cache'
+        sudo rm /private/var/log/asl/*.asl
+
+      # mou {{{3
+      case 'mou'
+        set -e argv[1] # remove the first argument
+        open -a Mou $argv
+
+      # subl {{{3
+      case 'subl'
+        set -e argv[1] # remove the first argument
+        open -a Sublime\ Text $argv
+
+      # vlc {{{3
+      case 'vlc'
+        set -e argv[1] # remove the first argument
+        open -a VLC $argv
+
+      # quandoo-mac {{{3
+      case 'docker-nuke'
+        rm ~/Library/Containers/com.docker.docker/Data/vms/0/Docker.raw
+
+      # fallback {{{3
+      case '*'
+        _r $argv
+    end
+  end
+
+  # complete - mac {{{3
+  set r_complete $r_complete chrome
+  set r_complete $r_complete code
+  set r_complete $r_complete clear-item-cache
+  set r_complete $r_complete docker-nuke
+  set r_complete $r_complete mou
+  set r_complete $r_complete subl
+  set r_complete $r_complete vlc
+end
+
+# r - final complete config {{{2
+# set up auto completion, -c command name, -f no filename, -a accepted words
+complete -c r -f -a "$r_complete"
+
+# ssh-agent - Auto-load git ssh credentials in fish {{{1
+setenv SSH_ENV $HOME/.ssh/environment
+
+type start_agent > /dev/null 2>&1; or function start_agent
+  echo "Initializing new SSH agent ..."
+  ssh-agent -c | sed 's/^echo/#echo/' > $SSH_ENV
+  echo "succeeded"
+  chmod 600 $SSH_ENV
+  . $SSH_ENV > /dev/null
+  ssh-add
+end
+
+type test_identities > /dev/null 2>&1; or function test_identities
+  ssh-add -l | grep "The agent has no identities" > /dev/null
+  if [ $status -eq 0 ]
+    ssh-add
+    if [ $status -eq 2 ]
+      start_agent
+    end
+  end
+end
+
+if [ -n "$SSH_AGENT_PID" ]
+  ps -ef | grep $SSH_AGENT_PID | grep ssh-agent > /dev/null
+  if [ $status -eq 0 ]
+    test_identities
+  end
+else
+  if [ -f $SSH_ENV ]
+    . $SSH_ENV > /dev/null
+  end
+  ps -ef | grep $SSH_AGENT_PID | grep -v grep | grep ssh-agent > /dev/null
+  if [ $status -eq 0 ]
+    test_identities
+  else
+    start_agent
+  end
+end
+
+# vim {{{1
+# vim - All OS {{{2
+# Initialize vim backup and undo dir {{{3
+mkdir ~/.vim/undo 2> /dev/null
+mkdir ~/.vim/backup 2> /dev/null
+
+# vi for vim {{{2
+function vi
+  vim $argv
+end
+
+# open the recently opened file in vim {{{3
+type vr > /dev/null 2>&1; or function vr
+  vim -c 'MRU' -c 'normal ' $argv
+end
+
+# vim - Mac {{{2
+if test (uname) = Darwin
+
+  # vim: use macvim on mac {{{3
+  function vim
+    /Applications/MacVim.app/Contents/MacOS/Vim $argv
+  end
+
+  # simple-vim {{{3
+  type svim > /dev/null 2>&1; or function svim
+    /Applications/MacVim.app/Contents/MacOS/Vim -N -u ~/git/dot-files/vim/vimrc-simple $argv
+  end
+
+  # open remotely in gui vim if possible {{{3
+  type rvim > /dev/null 2>&1; or function rvim
+    /Applications/MacVim.app/Contents/MacOS/Vim --remote-silent $argv
+  end
+
+  # env setting for vim {{{3
+  setenv EDITOR /Applications/MacVim.app/Contents/MacOS/Vim
+
+# vim - Linux {{{2
+else
+
+  # simple-vim {{{3
+  type svim > /dev/null 2>&1; or function svim
+    vim -N -u ~/git/dot-files/vim/vimrc-simple $argv
+  end
+
+  # open remotely in gui vim if possible, overwriting system default command {{{3
+  function rvim
+    vim --remote $argv
+  end
+
+  # overwriting system default server name to make remote opening files with rvim easier {{{3
+  function gvim
+    command gvim --servername VIM $argv
+  end
+
+end
+
+# autorun {{{1
+# turn off the 'welcome to fish' greeting
+set fish_greeting ""
+
+# autorun - Linux {{{2
+if test (uname) = Linux
+  r map-capslock-to-esc
+  # make font larger in virtual terminal
+  # Virtual terminal is the one after pressing <ctrl-alt-f1>
+  # notice that this doesn't work for GUI, so the error message is piped to black hole
+  setfont Uni3-Terminus28x14.psf.gz 2> /dev/null
+end
