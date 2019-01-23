@@ -1,0 +1,70 @@
+" NeoBundle {{{1
+set runtimepath+=~/.vim/bundle/neobundle.vim/
+call neobundle#begin(expand('~/.vim/bundle/'))
+NeoBundleFetch 'Shougo/neobundle.vim'
+
+" active plugins {{{2
+NeoBundle 'yegappan/mru'
+NeoBundle 'tpope/vim-commentary'
+NeoBundle 'ctrlpvim/ctrlp.vim'
+
+" passive plugins {{{2
+NeoBundle 'EinfachToll/DidYouMean'
+NeoBundle 'ervandew/supertab'
+NeoBundle 'mhinz/vim-signify'
+NeoBundle 'oblitum/rainbow'
+
+" boilerplate {{{2
+call neobundle#end()
+NeoBundleCheck
+
+" CtrlP {{{2
+let g:ctrlp_map = '<c-p>'
+nnoremap <space><space>r :CtrlPMRUFiles<CR>
+let g:ctrlp_custom_ignore = '\v[\/](compiler|node_modules|target|dist)|(\.(swp|ico|git|svn))$'
+
+" rainbow {{{2
+let g:rainbow_active = 1
+
+" essential {{{1
+syntax on
+set ruler
+set ignorecase
+nnoremap Q @q
+set relativenumber
+set number
+set hlsearch
+set guifont=Menlo\ Regular:h20
+colorscheme elflord
+
+" indentation and tabs {{{2
+" Automatically indent
+set autoindent
+" Smartly indent, helpful for coding because it takes care of brackets
+set smartindent
+" 2-space tabing
+set tabstop=2
+" treat 2 spaces as one deletion when deleting
+set softtabstop=2
+" Set shiftwidth the same value as tabstop
+set shiftwidth=0
+" Use spaces for tabs
+set expandtab
+
+" text width and wrapping {{{2
+set colorcolumn=100
+set textwidth=100
+
+" fold {{{2
+set nofoldenable
+set foldmethod=marker
+
+" create persist undo {{{1
+set history=1000
+set undofile
+set undodir=~/.vim/undo
+set undolevels=1000
+set undoreload=10000
+set backupdir=~/.vim/backup/
+set directory=~/.vim/backup/
+

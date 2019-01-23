@@ -81,6 +81,10 @@ let g:netrw_liststyle=3
 " Cursor position on the bottom right corner
 set ruler
 
+" disable the annoying restore prev session on startup (I have MRU for that)
+let g:session_autoload = 'no'
+
+" highlight search
 set hlsearch
 
 " Show current file name on status bar
