@@ -200,14 +200,11 @@ set e_complete $e_complete e
 set e_complete $e_complete fish
 set e_complete $e_complete g
 set e_complete $e_complete git
-set e_complete $e_complete grep
-set e_complete $e_complete inner
 set e_complete $e_complete kill
 set e_complete $e_complete learn
 set e_complete $e_complete neobundle
 set e_complete $e_complete net-worth
 set e_complete $e_complete notes
-set e_complete $e_complete outer
 set e_complete $e_complete prosper
 set e_complete $e_complete q
 set e_complete $e_complete quandoo
