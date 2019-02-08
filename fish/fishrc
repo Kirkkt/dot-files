@@ -216,8 +216,6 @@ set e_complete $e_complete book
 set e_complete $e_complete bookmarks
 set e_complete $e_complete brcl
 set e_complete $e_complete brcm
-set e_complete $e_complete cn-investment
-set e_complete $e_complete cn-safe
 set e_complete $e_complete d
 set e_complete $e_complete diary
 set e_complete $e_complete e
