@@ -40,22 +40,6 @@ function tree
   command tree -I 'node_modules' $argv | less -FRX
 end
 
-# abbr {{{1
-# abbr - directories {{{2
-abbr ,dd ~/github/dot-files/
-abbr ,dv ~/dev/
-abbr ,ds ~/git/stash
-abbr ,dq ~/git/stash/work-stuff/employment/quandoo
-abbr ,db ~/git/stash/projects/project-berlin-20180901/
-
-# abbr - files {{{2
-abbr ,ff ~/github/dot-files/fish/fishrc
-abbr ,fv ~/github/dot-files/vim/vimrc
-abbr ,fs ~/git/dot-files/safe/safe.mkd
-abbr ,fb ~/git/dot-files/notebooks/bookmarks.md
-abbr ,fd ~/git/dot-files/notebooks/my-diary.mkd
-abbr ,fq ~/git/dot-files/notebooks/quandoo.mkd
-
 # d {{{1
 # _d {{{2
 type _d > /dev/null 2>&1; or function _d
@@ -159,14 +143,6 @@ end
 # _e {{{2
 type _e > /dev/null 2>&1; or function _e
   switch $argv[1]
-    # bash
-    case 'brcm'
-      vim ~/git/dot-files/bash/bashrc-macbook
-    case 'brcl'
-      vim ~/git/dot-files/bash/bashrc-linux
-    # vim
-    case 'vrcr'
-      vim ~/.vimrc
     # git dir files
     case 'word'
       vim ~/dev/german-flashcards/all-words.txt
@@ -222,14 +198,11 @@ set e_complete $e_complete e
 set e_complete $e_complete fish
 set e_complete $e_complete g
 set e_complete $e_complete git
-set e_complete $e_complete grep
-set e_complete $e_complete inner
 set e_complete $e_complete kill
 set e_complete $e_complete learn
 set e_complete $e_complete neobundle
 set e_complete $e_complete net-worth
 set e_complete $e_complete notes
-set e_complete $e_complete outer
 set e_complete $e_complete prosper
 set e_complete $e_complete q
 set e_complete $e_complete quandoo
@@ -1434,7 +1407,7 @@ if test (uname) = Darwin
 
   # simple-vim {{{3
   type svim > /dev/null 2>&1; or function svim
-    /Applications/MacVim.app/Contents/MacOS/Vim -N -u ~/git/dot-files/vim/vimrc-simple $argv
+    /Applications/MacVim.app/Contents/MacOS/Vim -N -u ~/github/dot-files/vim/vimrc-simple $argv
   end
 
   # open remotely in gui vim if possible {{{3
@@ -1450,7 +1423,7 @@ else
 
   # simple-vim {{{3
   type svim > /dev/null 2>&1; or function svim
-    vim -N -u ~/git/dot-files/vim/vimrc-simple $argv
+    vim -N -u ~/github/dot-files/vim/vimrc-simple $argv
   end
 
   # open remotely in gui vim if possible, overwriting system default command {{{3

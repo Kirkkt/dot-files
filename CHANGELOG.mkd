@@ -3,3 +3,6 @@
     - imported from ~/git/dot-files, basically working
 - vim
     - imported from ~/git/dot-files, basically working
+    - imported vimrc-simple and basically working
+- tmux
+    - imported from ~/git/dot-files, basically working
