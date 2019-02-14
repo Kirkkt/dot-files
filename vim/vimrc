@@ -14,7 +14,6 @@ NeoBundle 'xolox/vim-misc'
 NeoBundle 'xolox/vim-session'
 NeoBundle 'yegappan/mru'
 NeoBundle 'tpope/vim-eunuch' " :Rename new_name to use, **TRY**
-NeoBundle 'maxbrunsfeld/vim-yankstack'
 
 " passive plug-ins
 NeoBundle 'EinfachToll/DidYouMean'
@@ -354,10 +353,6 @@ let g:csv_nomap_w = 1
 " by default vim-indent-guides occupies \ig, mapping it to something useless releases \ig
 nnoremap <space>t<f1>` :<Plug>IndentGuidesToggle<cr>
 
-" yankstack
-nmap <c-k> <Plug>yankstack_substitute_older_paste
-nmap <c-j> <Plug>yankstack_substitute_newer_paste
-
 " Abbreviations {{{1
 " Quick insert dates
 inoreabbrev qdl <c-r>=strftime("%Y/%m/%d")<cr><left><esc>
@@ -448,11 +443,12 @@ function! MapCrFunction()
     nnoremap <cr> ggdG:silent! r ~/git/dot-files/vim/2plugins/manualMapping/react-please-remove-component.js<bar>w<cr>
   elseif l:file =~ '/dev/preorder-frontend2'
     nnoremap <cr> ggdG:silent! r ~/git/dot-files/vim/2plugins/manualMapping/react-please-remove-component.js<bar>w<cr>
+  elseif l:file =~ '/dev/qpay_web'
+    nnoremap <cr> vi{:sort<cr>
   endif
 endfunction
 
 command! MapCr silent! call MapCrFunction()
-
 
 " mappings {{{1
 " vimrc_noReplaceUncommonCharacters

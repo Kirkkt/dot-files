@@ -154,6 +154,12 @@ type _e > /dev/null 2>&1; or function _e
       vim ~/git/dot-files/knowledge/learn/command-line/fish/fish.mkd
     case 'vim'
       vim ~/git/dot-files/knowledge/learn/command-line/vim/vim.mkd
+    case 'vimrc'
+      vim ~/github/dot-files/vim/vimrc
+    case 'vimrc-simple'
+      vim ~/github/dot-files/vim/vimrc
+    case 'fishrc'
+      vim ~/github/dot-files/fish/fishrc
     case 'prosper'
       vim ~/git/dot-files/spreadsheets/wealth/prosper.csv
     case 'net-worth'
@@ -196,6 +202,7 @@ set e_complete $e_complete d
 set e_complete $e_complete diary
 set e_complete $e_complete e
 set e_complete $e_complete fish
+set e_complete $e_complete fishrc
 set e_complete $e_complete g
 set e_complete $e_complete git
 set e_complete $e_complete kill
@@ -210,7 +217,8 @@ set e_complete $e_complete r
 set e_complete $e_complete safe
 set e_complete $e_complete tmux-conf
 set e_complete $e_complete vim
-set e_complete $e_complete vrcr
+set e_complete $e_complete vimrc
+set e_complete $e_complete vimrc-simple
 set e_complete $e_complete word
 
 # e-Linux {{{2

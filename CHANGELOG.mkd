@@ -4,5 +4,6 @@
 - vim
     - imported from ~/git/dot-files, basically working
     - imported vimrc-simple and basically working
+    - get rid of yankstack because it makes `nmap S` not working
 - tmux
     - imported from ~/git/dot-files, basically working
