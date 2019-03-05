@@ -985,6 +985,7 @@ autocmd FileType javascript setlocal colorcolumn=100
 " Set it to 120 temporarily
 autocmd FileType javascript setlocal textwidth=120
 autocmd FileType javascript setlocal colorcolumn=120
+autocmd FileType javascript command! LongLinesSearch /^.*\%>120v.\+
 
 " quick save and run with node
 autocmd FileType javascript nnoremap <f9> :w<cr>:!clear;node %<cr>
