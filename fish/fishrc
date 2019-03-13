@@ -557,7 +557,6 @@ type cs > /dev/null 2>&1; or function cs
     vim $grep_result0 \
       -c 'silent g/'$cs_keywords[1]'/norm l' \
       -c 'norm 0gg' \
-      -c 'sort' \
       -c 'nnoremap <cr> :OpenAllFilesInGrepResult<cr>'
   else if [ $cs_no_less_option = 'false' ]
     cat $grep_result0 | less -FRX
