@@ -1,4 +1,5 @@
-###### VERSION DATE
+###### v1.0.0 2019/04/23
+- final backup before switching to text/non-text file structure
 - fish
     - imported from ~/git/dot-files, basically working
 - vim

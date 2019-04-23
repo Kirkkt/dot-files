@@ -183,7 +183,7 @@ type _e > /dev/null 2>&1; or function _e
     case 'diary'
       vim ~/git/dot-files/notebooks/my-diary.mkd
     case 'quandoo'
-      vim ~/git/dot-files/notebooks/quandoo.mkd
+      vim ~/git/dot-files/notebooks/quandoo/quandoo.mkd
     case 'berlin'
       vim ~/git/stash/projects/project-berlin-20180901/berlin.mkd
     case '*'
@@ -1329,6 +1329,10 @@ if test (uname) = Darwin
       case 'docker-nuke'
         rm ~/Library/Containers/com.docker.docker/Data/vms/0/Docker.raw
 
+      # check download history {{{3
+      case 'check-download-history'
+        sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV* 'select LSQuarantineDataURLString from LSQuarantineEvent'
+
       # fallback {{{3
       case '*'
         _r $argv
@@ -1343,6 +1347,7 @@ if test (uname) = Darwin
   set r_complete $r_complete mou
   set r_complete $r_complete subl
   set r_complete $r_complete vlc
+  set r_complete $r_complete check-download-history
 end
 
 # r - final complete config {{{2
